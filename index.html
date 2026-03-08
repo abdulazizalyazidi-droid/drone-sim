@@ -6,76 +6,109 @@
 <title>محاكاة الدرونات</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;overflow:hidden;font-family:monospace;color:#00ff41}
+body{background:#000;overflow:hidden;font-family:monospace;color:#00ff41;user-select:none}
 #cv{display:block;width:100vw;height:100vh}
-#radar-wrap{position:fixed;bottom:16px;left:16px}
-#radar{width:170px;height:170px;border-radius:50%;background:rgba(0,15,0,0.92);border:2px solid #00ff4150;position:relative;overflow:hidden}
-#radar::after{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,transparent 0,transparent 39px,#00ff4112 40px,transparent 41px,transparent 79px,#00ff4112 80px,transparent 81px)}
-#rsweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(0,255,65,0.5) 0deg,rgba(0,255,65,0.0) 70deg,transparent 70deg);transform-origin:center;animation:sw 3s linear infinite}
+
+/* RADAR */
+#radar-wrap{position:fixed;bottom:12px;left:12px;z-index:10}
+#radar{width:150px;height:150px;border-radius:50%;background:rgba(0,12,0,0.92);border:1px solid #00ff4140;position:relative;overflow:hidden}
+#radar::after{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,transparent 0,transparent 35px,#00ff4110 36px,transparent 37px,transparent 71px,#00ff4110 72px,transparent 73px)}
+#rsweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(0,255,65,0.45) 0deg,transparent 65deg);transform-origin:center;animation:sw 3s linear infinite}
 @keyframes sw{to{transform:rotate(360deg)}}
 #rlines{position:absolute;inset:0}
-#rlines::before,#rlines::after{content:'';position:absolute;background:#00ff4120}
+#rlines::before,#rlines::after{content:'';position:absolute;background:#00ff4115}
 #rlines::before{width:1px;height:100%;left:50%}
 #rlines::after{width:100%;height:1px;top:50%}
-.blip{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
-.be{width:7px;height:7px;background:#ff3333;box-shadow:0 0 10px #ff3333}
-.bd{width:6px;height:6px;background:#00aaff;box-shadow:0 0 8px #00aaff}
-.bh{width:8px;height:8px;background:#00ff41;box-shadow:0 0 12px #00ff41;left:50%!important;top:50%!important}
-#rlabel{font-size:.6rem;color:#00ff4170;text-align:center;margin-top:3px;letter-spacing:2px}
-#dof-wrap{position:fixed;bottom:16px;right:16px;width:160px}
-#dof-title{font-size:.6rem;color:#00ff4170;letter-spacing:2px;text-align:center;margin-bottom:6px}
-#dof-box{background:rgba(0,15,0,0.92);border:1px solid #00ff4130;border-radius:10px;padding:10px}
-.dr{display:flex;align-items:center;gap:6px;margin-bottom:5px}
-.dl{font-size:.6rem;color:#00ff4170;width:20px;text-align:center}
-.dbw{flex:1;height:6px;background:rgba(0,255,65,0.1);border-radius:3px;overflow:hidden;position:relative}
-.db{height:100%;border-radius:3px;transition:all .1s}
-.dc{position:absolute;left:50%;top:0;width:1px;height:100%;background:#00ff4140}
-.dv{font-size:.6rem;color:#00ff41;width:32px;text-align:right}
+.blip{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.be{width:6px;height:6px;background:#ff3333;box-shadow:0 0 8px #ff3333}
+.bd{width:5px;height:5px;background:#00aaff;box-shadow:0 0 6px #00aaff}
+.bh{width:7px;height:7px;background:#00ff41;box-shadow:0 0 10px #00ff41;left:50%!important;top:50%!important}
+#rlabel{font-size:.55rem;color:#00ff4160;text-align:center;margin-top:2px;letter-spacing:2px}
+
+/* THREATS PANEL */
+#threats{position:fixed;top:10px;left:10px;background:rgba(8,0,0,0.88);border:1px solid #ff333325;border-radius:8px;padding:8px 12px;font-size:.62rem;min-width:175px;max-width:190px;z-index:10}
+#tt{color:#ff333360;font-size:.55rem;letter-spacing:2px;margin-bottom:3px}
+.titem{display:flex;gap:5px;border-bottom:1px solid #ff333310;padding:2px 0;align-items:center}
+.t-id{color:#ff5050;width:28px}
+.t-dist{color:#ff9900;width:42px}
+.t-spd{color:#ffcc00;width:38px}
+.t-pat{color:#ff505060;font-size:.55rem;flex:1}
+.t-lock{font-size:.6rem}
+
+/* STATS */
+#stats{position:fixed;top:10px;right:10px;background:rgba(0,8,0,0.88);border:1px solid #00ff4120;border-radius:8px;padding:8px 12px;font-size:.65rem;line-height:1.85;min-width:165px;z-index:10}
+.sr{display:flex;justify-content:space-between;gap:8px}
+.sk{color:#00ff4155}.sv{color:#00ff41;font-weight:bold}
+
+/* SCORE */
+#scorebar{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,8,0,0.88);border:1px solid #ffffff12;border-radius:99px;padding:6px 18px;display:flex;gap:14px;font-size:.7rem;white-space:nowrap;z-index:10}
+.scd{color:#00ff41}.sca{color:#ff3333}.scr{color:#fbbf24}.scs{color:#ffffff15}
+
+/* DOF */
+#dof-wrap{position:fixed;bottom:12px;right:12px;width:155px;z-index:10}
+#dof-title{font-size:.55rem;color:#00ff4160;letter-spacing:2px;text-align:center;margin-bottom:4px}
+#dof-box{background:rgba(0,12,0,0.88);border:1px solid #00ff4120;border-radius:8px;padding:8px}
+.dr{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.dl{font-size:.55rem;color:#00ff4160;width:16px;text-align:center}
+.dbw{flex:1;height:5px;background:rgba(0,255,65,0.08);border-radius:3px;overflow:hidden;position:relative}
+.db{height:100%;border-radius:3px;transition:width .08s,margin-left .08s}
+.dc{position:absolute;left:50%;top:0;width:1px;height:100%;background:#00ff4130}
+.dv{font-size:.55rem;color:#00ff41;width:28px;text-align:right}
 .ax-x .db{background:#ff6060}.ax-y .db{background:#60ff60}.ax-z .db{background:#6060ff}
 .ax-r .db{background:#ff60ff}.ax-p .db{background:#ffff60}.ax-w .db{background:#60ffff}
-#stats{position:fixed;top:12px;right:12px;background:rgba(0,10,0,0.92);border:1px solid #00ff4130;border-radius:8px;padding:10px 14px;font-size:.68rem;line-height:1.9;min-width:175px}
-.sr{display:flex;justify-content:space-between;gap:10px}
-.sk{color:#00ff4160}.sv{color:#00ff41;font-weight:bold}
-#threats{position:fixed;top:12px;left:12px;background:rgba(10,0,0,0.92);border:1px solid #ff333330;border-radius:8px;padding:10px 14px;font-size:.65rem;line-height:1.8;min-width:185px;max-width:200px}
-#tt{color:#ff333370;font-size:.58rem;letter-spacing:2px;margin-bottom:4px}
-.ti{display:flex;justify-content:space-between;gap:6px;border-bottom:1px solid #ff333315;padding:2px 0}
-.ti-id{color:#ff6060;min-width:30px}.ti-d{color:#ff9900;min-width:45px}.ti-s{color:#ffcc00;min-width:40px}.ti-p{color:#ff606080;font-size:.58rem}
-#scorebar{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,10,0,0.92);border:1px solid #ffffff15;border-radius:99px;padding:7px 20px;display:flex;gap:16px;font-size:.72rem;white-space:nowrap}
-.sd{color:#00ff41}.sa{color:#ff3333}.sr2{color:#fbbf24}.ss{color:#ffffff20}
-#alertbox{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(20,0,0,0.95);border:2px solid #ff3333;border-radius:10px;padding:12px 24px;color:#ff3333;font-size:.8rem;letter-spacing:2px;display:none;text-align:center;z-index:50}
-#launch-wrap{position:fixed;bottom:200px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px}
-#lbtn{background:rgba(0,20,0,0.95);border:2px solid #00ff41;color:#00ff41;padding:14px 36px;border-radius:10px;font-family:monospace;font-size:.9rem;cursor:pointer;letter-spacing:2px;transition:all .15s}
-#lbtn:active{transform:scale(0.94)}
-#lbtn:disabled{opacity:0.3;border-color:#00ff4140}
-#lstatus{font-size:.65rem;color:#00ff4160;letter-spacing:1px;text-align:center}
-#dcbar{display:flex;gap:6px;margin-top:4px}
-.dcd{width:10px;height:10px;border-radius:50%;background:#00ff41;box-shadow:0 0 6px #00ff41;transition:all .3s}
-.dcd.used{background:#00ff4130;box-shadow:none}
-#adrones{position:fixed;bottom:200px;right:16px;background:rgba(0,10,20,0.92);border:1px solid #00aaff30;border-radius:8px;padding:8px 12px;font-size:.62rem;min-width:150px}
-#adt{color:#00aaff60;font-size:.58rem;letter-spacing:2px;margin-bottom:4px}
-.adi{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px solid #00aaff10}
-.ai-id{color:#00aaff}.ai-t{color:#ff606080;font-size:.58rem}.ai-d{color:#00ffaa80}
+
+/* LAUNCH */
+#launch-wrap{position:fixed;bottom:170px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;z-index:10}
+#lbtn{background:rgba(0,18,0,0.95);border:2px solid #00ff41;color:#00ff41;padding:12px 32px;border-radius:10px;font-family:monospace;font-size:.85rem;cursor:pointer;letter-spacing:2px;transition:all .15s;-webkit-tap-highlight-color:transparent}
+#lbtn:active{transform:scale(0.93);background:rgba(0,255,65,0.12)}
+#lbtn:disabled{opacity:0.25;border-color:#00ff4130;cursor:not-allowed}
+#lstatus{font-size:.62rem;color:#00ff4155;letter-spacing:1px;text-align:center}
+#dcbar{display:flex;gap:5px;margin-top:3px}
+.dcd{width:9px;height:9px;border-radius:50%;background:#00ff41;box-shadow:0 0 5px #00ff41;transition:all .3s}
+.dcd.used{background:#00ff4125;box-shadow:none}
+
+/* ACTIVE DRONES */
+#adrones{position:fixed;bottom:170px;right:12px;background:rgba(0,8,18,0.88);border:1px solid #00aaff20;border-radius:8px;padding:7px 10px;font-size:.6rem;min-width:145px;z-index:10}
+#adt{color:#00aaff55;font-size:.55rem;letter-spacing:2px;margin-bottom:3px}
+.adi{display:flex;justify-content:space-between;gap:6px;padding:2px 0;border-bottom:1px solid #00aaff10}
+.ai-id{color:#00aaff}.ai-t{color:#ff505070;font-size:.55rem}.ai-d{color:#00ffaa70}.ai-s{font-size:.55rem}
+
+/* ALERT */
+#alertbox{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(18,0,0,0.96);border:2px solid #ff3333;border-radius:10px;padding:10px 22px;color:#ff3333;font-size:.78rem;letter-spacing:2px;display:none;text-align:center;z-index:50}
+
+/* CAMERA HINT */
+#camhint{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);color:#00ff4130;font-size:.58rem;letter-spacing:1px;z-index:10;text-align:center}
+
+/* LOCK INDICATOR */
+#lockinfo{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:5;text-align:center}
+.lock-ring{width:60px;height:60px;border:2px solid #ff330060;border-radius:50%;margin:0 auto;display:none}
+.lock-ring.active{display:block;border-color:#ff3333;animation:pulse .5s infinite alternate}
+@keyframes pulse{to{border-color:#ff333380;transform:scale(1.1)}}
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
+
 <div id="scorebar">
-  <span class="sd">🛡 دفاع: <strong id="sc-def">0</strong></span>
-  <span class="ss">|</span>
-  <span class="sa">☠ اختراق: <strong id="sc-atk">0</strong></span>
-  <span class="ss">|</span>
-  <span class="sr2">جولة: <strong id="sc-round">1</strong></span>
+  <span class="scd">🛡 <strong id="sc-def">0</strong></span>
+  <span class="scs">|</span>
+  <span class="sca">☠ <strong id="sc-atk">0</strong></span>
+  <span class="scs">|</span>
+  <span class="scr">جولة <strong id="sc-round">1</strong></span>
 </div>
-<div id="threats"><div id="tt">▼ التهديدات النشطة</div><div id="tlist"></div></div>
+
+<div id="threats"><div id="tt">▼ التهديدات</div><div id="tlist"></div></div>
+
 <div id="stats">
-  <div class="sr"><span class="sk">موقع X</span><span class="sv" id="st-x">0</span></div>
-  <div class="sr"><span class="sk">موقع Y</span><span class="sv" id="st-y">0</span></div>
-  <div class="sr"><span class="sk">موقع Z</span><span class="sv" id="st-z">0</span></div>
-  <div class="sr"><span class="sk">الارتفاع</span><span class="sv" id="st-alt">0</span> م</div>
-  <div class="sr"><span class="sk">السرعة</span><span class="sv" id="st-spd">0</span> م/ث</div>
+  <div class="sr"><span class="sk">X</span><span class="sv" id="st-x">0</span></div>
+  <div class="sr"><span class="sk">Y</span><span class="sv" id="st-y">0</span></div>
+  <div class="sr"><span class="sk">Z</span><span class="sv" id="st-z">0</span></div>
+  <div class="sr"><span class="sk">ارتفاع</span><span class="sv" id="st-alt">0</span>م</div>
+  <div class="sr"><span class="sk">سرعة</span><span class="sv" id="st-spd">0</span>م/ث</div>
   <div class="sr"><span class="sk">جاهز</span><span class="sv" id="st-ready">5</span></div>
   <div class="sr"><span class="sk">طائر</span><span class="sv" id="st-fly">0</span></div>
 </div>
+
 <div id="radar-wrap">
   <div id="radar">
     <div id="rlines"></div>
@@ -84,8 +117,9 @@ body{background:#000;overflow:hidden;font-family:monospace;color:#00ff41}
   </div>
   <div id="rlabel">RADAR ▸ 2KM</div>
 </div>
+
 <div id="dof-wrap">
-  <div id="dof-title">مؤشر الحركة 6DOF</div>
+  <div id="dof-title">6DOF — درون نشط</div>
   <div id="dof-box">
     <div class="dr ax-x"><span class="dl">X</span><div class="dbw"><div class="db" id="dof-x"></div><div class="dc"></div></div><span class="dv" id="dv-x">0</span></div>
     <div class="dr ax-y"><span class="dl">Y</span><div class="dbw"><div class="db" id="dof-y"></div><div class="dc"></div></div><span class="dv" id="dv-y">0</span></div>
@@ -95,214 +129,650 @@ body{background:#000;overflow:hidden;font-family:monospace;color:#00ff41}
     <div class="dr ax-w"><span class="dl">W</span><div class="dbw"><div class="db" id="dof-w"></div><div class="dc"></div></div><span class="dv" id="dv-w">0</span></div>
   </div>
 </div>
+
 <div id="adrones"><div id="adt">▶ درونات في الجو</div><div id="adlist"></div></div>
+
 <div id="launch-wrap">
   <button id="lbtn" onclick="sendDrone()">🚁 أرسل درون</button>
-  <div id="lstatus">اضغط لإرسال درون دفاعي</div>
+  <div id="lstatus">جاهز للإطلاق</div>
   <div id="dcbar"></div>
 </div>
+
 <div id="alertbox"></div>
+<div id="camhint">اسحب للتدوير حول القاعدة</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-var W=window.innerWidth,H=window.innerHeight;
+// ═══════════════════════════════════════
+// RENDERER & SCENE
+// ═══════════════════════════════════════
+var W=window.innerWidth, H=window.innerHeight;
 var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('cv'),antialias:true});
-renderer.setSize(W,H);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(W,H);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+
 var scene=new THREE.Scene();
-scene.background=new THREE.Color(0x000800);
-scene.fog=new THREE.FogExp2(0x000800,0.0005);
-var camera=new THREE.PerspectiveCamera(60,W/H,0.1,6000);
-camera.position.set(0,300,400);camera.lookAt(0,0,0);
-scene.add(new THREE.AmbientLight(0x002200,1.2));
-var dl=new THREE.DirectionalLight(0x00ff41,0.4);dl.position.set(200,400,100);scene.add(dl);
-scene.add(new THREE.GridHelper(4000,80,0x003300,0x001500));
-var gm=new THREE.Mesh(new THREE.PlaneGeometry(4000,4000),new THREE.MeshLambertMaterial({color:0x001000}));
-gm.rotation.x=-Math.PI/2;gm.position.y=-1;scene.add(gm);
-var sv=[];for(var i=0;i<2000;i++)sv.push((Math.random()-.5)*5000,Math.random()*1000+200,(Math.random()-.5)*5000);
-var sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
-scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x00ff41,size:1.2,transparent:true,opacity:0.5})));
-var homeBase=new THREE.Group();
-homeBase.add(new THREE.Mesh(new THREE.CylinderGeometry(18,18,3,16),new THREE.MeshLambertMaterial({color:0x00ff41,emissive:0x002200})));
-[25,35,50].forEach(function(r,i){var ring=new THREE.Mesh(new THREE.RingGeometry(r,r+1.5,32),new THREE.MeshBasicMaterial({color:0x00ff41,side:THREE.DoubleSide,transparent:true,opacity:0.15-i*0.04}));ring.rotation.x=-Math.PI/2;ring.position.y=0.5;homeBase.add(ring);});
-scene.add(homeBase);
+scene.background=new THREE.Color(0x000a00);
+scene.fog=new THREE.FogExp2(0x000a00,0.00035);
+
+// CAMERA — ground level perspective looking up/forward
+var camera=new THREE.PerspectiveCamera(65,W/H,0.5,8000);
+camera.position.set(0,25,200);
+camera.lookAt(0,80,0);
+
+// Lights
+scene.add(new THREE.AmbientLight(0x001a00,1.0));
+var sunL=new THREE.DirectionalLight(0x00ff41,0.35);
+sunL.position.set(300,600,200);
+scene.add(sunL);
+var blueL=new THREE.DirectionalLight(0x001144,0.2);
+blueL.position.set(-200,300,-300);
+scene.add(blueL);
+
+// ═══════════════════════════════════════
+// ENVIRONMENT
+// ═══════════════════════════════════════
+// Ground
+var ground=new THREE.Mesh(
+  new THREE.PlaneGeometry(5000,5000),
+  new THREE.MeshLambertMaterial({color:0x001000})
+);
+ground.rotation.x=-Math.PI/2; ground.position.y=0;
+scene.add(ground);
+
+// Grid
+var grid=new THREE.GridHelper(5000,100,0x002800,0x001400);
+scene.add(grid);
+
+// Stars
+var sv=[];
+for(var i=0;i<3000;i++) sv.push((Math.random()-.5)*6000,200+Math.random()*1200,(Math.random()-.5)*6000);
+var sg=new THREE.BufferGeometry();
+sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x00ff41,size:1.5,transparent:true,opacity:0.45})));
+
+// HOME BASE — center
+var homeGroup=new THREE.Group();
+homeGroup.add(new THREE.Mesh(
+  new THREE.CylinderGeometry(20,20,3,16),
+  new THREE.MeshLambertMaterial({color:0x00ff41,emissive:0x003300})
+));
+// Rings on ground
+[28,40,58].forEach(function(r,i){
+  var ring=new THREE.Mesh(
+    new THREE.RingGeometry(r,r+1.5,32),
+    new THREE.MeshBasicMaterial({color:0x00ff41,side:THREE.DoubleSide,transparent:true,opacity:0.12-i*0.03})
+  );
+  ring.rotation.x=-Math.PI/2; ring.position.y=0.3;
+  homeGroup.add(ring);
+});
+// Vertical pole
+homeGroup.add(new THREE.Mesh(
+  new THREE.CylinderGeometry(0.5,0.5,30,6),
+  new THREE.MeshLambertMaterial({color:0x004400})
+));
+scene.add(homeGroup);
+
+// Height markers (vertical lines to show altitude)
+for(var hi=0;hi<8;hi++){
+  var hAngle=hi/8*Math.PI*2;
+  var hLine=new THREE.Mesh(
+    new THREE.CylinderGeometry(0.3,0.3,400,4),
+    new THREE.MeshBasicMaterial({color:0x002200,transparent:true,opacity:0.3})
+  );
+  hLine.position.set(Math.cos(hAngle)*80,200,Math.sin(hAngle)*80);
+  scene.add(hLine);
+}
+
+// ═══════════════════════════════════════
+// DRONE FACTORY
+// ═══════════════════════════════════════
 function makeDrone(color,sc){
   sc=sc||1;
   var g=new THREE.Group();
-  var bm=new THREE.MeshLambertMaterial({color:color});
-  var am=new THREE.MeshLambertMaterial({color:0x222222});
+  var bm=new THREE.MeshLambertMaterial({color:color,emissive:new THREE.Color(color).multiplyScalar(0.1)});
+  var am=new THREE.MeshLambertMaterial({color:0x1a1a1a});
   g.add(new THREE.Mesh(new THREE.BoxGeometry(sc*2,sc*0.5,sc*3),bm));
-  [[-1,0,-0.6],[1,0,-0.6],[-1,0,0.6],[1,0,0.6]].forEach(function(p){
-    var arm=new THREE.Mesh(new THREE.BoxGeometry(sc*2.8,sc*0.12,sc*0.12),am);
-    arm.position.set(p[0]*sc*0.7,0,p[2]*sc);g.add(arm);
-    var rot=new THREE.Mesh(new THREE.CylinderGeometry(sc*0.9,sc*0.9,sc*0.04,8),new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.35,wireframe:true}));
-    rot.position.set(p[0]*sc*1.3,sc*0.15,p[2]*sc);rot.userData.r=true;g.add(rot);
+  var armPos=[[-1,0,-0.6],[1,0,-0.6],[-1,0,0.6],[1,0,0.6]];
+  armPos.forEach(function(p){
+    var arm=new THREE.Mesh(new THREE.BoxGeometry(sc*3,sc*0.1,sc*0.1),am);
+    arm.position.set(p[0]*sc*0.8,0,p[2]*sc); g.add(arm);
+    var rot=new THREE.Mesh(
+      new THREE.CylinderGeometry(sc*0.85,sc*0.85,sc*0.04,8),
+      new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.3,wireframe:true})
+    );
+    rot.position.set(p[0]*sc*1.4,sc*0.18,p[2]*sc);
+    rot.userData.isRotor=true; g.add(rot);
   });
+  // LED glow
+  var led=new THREE.Mesh(
+    new THREE.SphereGeometry(sc*0.25,6,6),
+    new THREE.MeshBasicMaterial({color:color})
+  );
+  led.position.set(0,-sc*0.3,sc*0.8); g.add(led);
   return g;
 }
-var enemies=[],defenders=[],particles=[];
-var scoreD=0,scoreA=0,round=1;
-var totalD=5,usedD=0;
-var eid=0,did=0;
-var spawnT=0,spawnI=10,gtime=0;
-var focused=null,camAngle=0;
+
+// ═══════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════
+var enemies=[], defenders=[], particles=[], trailParticles=[];
+var scoreD=0, scoreA=0, round=1;
+var totalDrones=5, usedDrones=0;
+var eid=0, did=0;
+var spawnT=0, spawnI=12, gtime=0;
+var focused=null;
+
+// Camera orbit
+var camTheta=0, camPhi=0.18; // phi = elevation angle from ground
+var camDist=220, camTarget=new THREE.Vector3(0,40,0);
+var isDragging=false, lastMX=0, lastMY=0;
+
+var FOV_HALF = Math.cos(120/2 * Math.PI/180); // cos(60°) for 120° FOV
+
+// ═══════════════════════════════════════
+// DRONE COUNT BAR
+// ═══════════════════════════════════════
 function buildBar(){
-  var bar=document.getElementById('dcbar');bar.innerHTML='';
-  for(var i=0;i<totalD;i++){var d=document.createElement('div');d.className='dcd'+(i<usedD?' used':'');d.id='dc'+i;bar.appendChild(d);}
+  var bar=document.getElementById('dcbar'); bar.innerHTML='';
+  for(var i=0;i<totalDrones;i++){
+    var d=document.createElement('div');
+    d.className='dcd'+(i<usedDrones?' used':'');
+    d.id='dc'+i; bar.appendChild(d);
+  }
 }
 buildBar();
 function refreshBar(){
-  for(var i=0;i<totalD;i++){var d=document.getElementById('dc'+i);if(d)d.className='dcd'+(i<usedD?' used':'');}
+  for(var i=0;i<totalDrones;i++){
+    var d=document.getElementById('dc'+i);
+    if(d) d.className='dcd'+(i<usedDrones?' used':'');
+  }
   var btn=document.getElementById('lbtn');
-  btn.disabled=usedD>=totalD||enemies.length===0;
-  document.getElementById('lstatus').textContent=usedD>=totalD?'لا يوجد درونات':enemies.length===0?'لا يوجد تهديد':'متاح: '+(totalD-usedD)+' درون';
+  var hasEnemy=enemies.some(function(e){return e.alive;});
+  btn.disabled=(usedDrones>=totalDrones||!hasEnemy);
+  document.getElementById('lstatus').textContent=
+    usedDrones>=totalDrones?'لا يوجد درونات متاحة':
+    !hasEnemy?'لا يوجد تهديد':
+    'متاح: '+(totalDrones-usedDrones)+' درون';
 }
+
+// ═══════════════════════════════════════
+// SPAWN ENEMY
+// ═══════════════════════════════════════
+var PATTERNS=['direct','spiral','low','high','zigzag'];
 function spawnEnemy(){
-  var a=Math.random()*Math.PI*2,dist=700+Math.random()*300;
-  var pos=new THREE.Vector3(Math.cos(a)*dist,40+Math.random()*120,Math.sin(a)*dist);
-  var m=makeDrone(0xff2222,1.8);m.position.copy(pos);scene.add(m);
-  var pats=['direct','spiral','low','high','zigzag'];
-  enemies.push({id:++eid,mesh:m,pos:pos.clone(),vel:new THREE.Vector3(),target:new THREE.Vector3(0,3,0),speed:12+Math.random()*10+round*1.5,pattern:pats[Math.floor(Math.random()*5)],phase:Math.random()*Math.PI*2,alive:true});
+  var angle=Math.random()*Math.PI*2;
+  var dist=600+Math.random()*400;
+  var startPos=new THREE.Vector3(
+    Math.cos(angle)*dist,
+    60+Math.random()*200,
+    Math.sin(angle)*dist
+  );
+  var mesh=makeDrone(0xff2200,2);
+  mesh.position.copy(startPos);
+  scene.add(mesh);
+
+  // Exhaust trail
+  var pat=PATTERNS[Math.floor(Math.random()*PATTERNS.length)];
+  var spd=10+Math.random()*8+round*1.2;
+  enemies.push({
+    id:++eid, mesh:mesh,
+    pos:startPos.clone(),
+    vel:new THREE.Vector3(),
+    target:new THREE.Vector3(0,3,0),
+    speed:spd, pattern:pat,
+    phase:Math.random()*Math.PI*2,
+    alive:true
+  });
 }
+
+// ═══════════════════════════════════════
+// SEND DEFENDER — lock on target
+// ═══════════════════════════════════════
 function sendDrone(){
-  if(usedD>=totalD){toast('لا يوجد درونات!');return;}
-  if(enemies.length===0){toast('لا يوجد تهديد');return;}
-  var engaged=defenders.map(function(d){return d.target?d.target.id:null;});
-  var target=null,best=Infinity;
-  enemies.forEach(function(e){if(!e.alive)return;var dist=e.pos.length();var pri=engaged.indexOf(e.id)>=0?dist*1.5:dist;if(pri<best){best=pri;target=e;}});
-  if(!target)return;
-  var sp=new THREE.Vector3((Math.random()-.5)*30,30+Math.random()*20,(Math.random()-.5)*30);
-  var m=makeDrone(0x0088ff,1.4);m.position.copy(sp);scene.add(m);
-  var def={id:++did,mesh:m,pos:sp.clone(),vel:new THREE.Vector3(),target:target,alive:true,speed:45,vx:0,vy:0,vz:0,roll:0,pitch:0,yaw:0};
-  defenders.push(def);usedD++;focused=def;refreshBar();
-  toast('درون #'+def.id+' أُطلق نحو التهديد #'+target.id);
+  if(usedDrones>=totalDrones){toast('لا يوجد درونات!');return;}
+  var liveEnemies=enemies.filter(function(e){return e.alive;});
+  if(liveEnemies.length===0){toast('لا يوجد تهديد');return;}
+
+  // Pick target: prefer unengaged, then nearest to base
+  var engagedIds=defenders.filter(function(d){return d.alive&&d.target;}).map(function(d){return d.target.id;});
+  var target=null, best=Infinity;
+  liveEnemies.forEach(function(e){
+    var dist=e.pos.length();
+    var pri=engagedIds.indexOf(e.id)>=0 ? dist*2 : dist;
+    if(pri<best){best=pri;target=e;}
+  });
+  if(!target) return;
+
+  // Lock this specific target — will NOT change
+  var lockedTarget=target;
+
+  var sp=new THREE.Vector3((Math.random()-.5)*20,8+Math.random()*10,(Math.random()-.5)*20);
+  var mesh=makeDrone(0x0088ff,1.5);
+  mesh.position.copy(sp);
+  scene.add(mesh);
+
+  var def={
+    id:++did, mesh:mesh,
+    pos:sp.clone(),
+    vel:new THREE.Vector3(),
+    target:lockedTarget,  // LOCKED — never changes
+    alive:true,
+    speed:50,
+    // 6DOF values
+    vx:0,vy:0,vz:0,roll:0,pitch:0,yaw:0,
+    // State machine
+    state:'hunting', // hunting | ascending | exploding
+    ascendTimer:0,
+    lostTarget:false,
+  };
+  defenders.push(def);
+  usedDrones++;
+  focused=def;
+  refreshBar();
+  toast('🔒 درون #'+def.id+' قُفِل على التهديد #'+lockedTarget.id);
 }
+
+// ═══════════════════════════════════════
+// UPDATE ENEMY AI
+// ═══════════════════════════════════════
 function updateEnemy(e,dt){
-  if(!e.alive)return;
-  var tt=e.target.clone().sub(e.pos),dist=tt.length();
-  if(dist<12){scoreA++;document.getElementById('sc-atk').textContent=scoreA;explode(e.pos.clone(),0xff4400,15);removeEnemy(e);showAlert('⚠ تهديد وصل للهدف!');return;}
-  var dir=tt.normalize(),mv=dir.clone(),t=gtime;
-  if(e.pattern==='spiral'){mv.x+=Math.sin(t*1.5+e.phase)*0.6;mv.z+=Math.cos(t*1.5+e.phase)*0.6;}
-  else if(e.pattern==='zigzag'){mv.x+=Math.sin(t*2.5+e.phase)*0.9;mv.y+=Math.sin(t*1.2+e.phase)*0.2;}
-  else if(e.pattern==='low'&&dist>50)mv.y-=0.4;
-  else if(e.pattern==='high'){if(dist>150)mv.y+=0.5;else mv.y-=0.3;}
-  mv.normalize();e.vel.lerp(mv.clone().multiplyScalar(e.speed),dt*1.8);
-  e.pos.addScaledVector(e.vel,dt);if(e.pos.y<5)e.pos.y=5;
-  e.mesh.position.copy(e.pos);if(e.vel.length()>0.5)e.mesh.lookAt(e.pos.clone().add(e.vel));
-  e.mesh.children.forEach(function(c){if(c.userData.r)c.rotation.y+=dt*18;});
-}
-function removeEnemy(e){
-  scene.remove(e.mesh);e.alive=false;enemies=enemies.filter(function(x){return x!==e;});
-  defenders.forEach(function(d){if(d.target===e){var nt=enemies.find(function(en){return en.alive;});if(nt)d.target=nt;else{d.alive=false;scene.remove(d.mesh);usedD=Math.max(0,usedD-1);}}});
-  defenders=defenders.filter(function(d){return d.alive;});refreshBar();
-}
-function updateDefender(d,dt){
-  if(!d.alive)return;
-  if(!d.target||!d.target.alive){var nt=enemies.find(function(e){return e.alive;});if(!nt){scene.remove(d.mesh);d.alive=false;usedD=Math.max(0,usedD-1);defenders=defenders.filter(function(x){return x!==d;});if(focused===d)focused=defenders[0]||null;refreshBar();return;}d.target=nt;}
-  var tti=d.pos.distanceTo(d.target.pos)/d.speed;
-  var pp=d.target.pos.clone().addScaledVector(d.target.vel,tti*0.6);
-  var tt2=pp.sub(d.pos),dist=tt2.length(),dir=tt2.normalize();
-  d.vx=dir.x*d.speed;d.vy=dir.y*d.speed;d.vz=dir.z*d.speed;
-  d.roll=Math.sin(gtime*2+d.id)*0.3;d.pitch=Math.atan2(dir.y,Math.sqrt(dir.x*dir.x+dir.z*dir.z));d.yaw=Math.atan2(dir.x,dir.z);
-  d.vel.lerp(dir.clone().multiplyScalar(d.speed),dt*3);d.pos.addScaledVector(d.vel,dt);if(d.pos.y<5)d.pos.y=5;
-  d.mesh.position.copy(d.pos);if(d.vel.length()>0.5)d.mesh.lookAt(d.pos.clone().add(d.vel));
-  d.mesh.children.forEach(function(c){if(c.userData.r)c.rotation.y+=dt*20;});
-  if(dist<7){
-    explode(d.pos.clone(),0x0088ff,10);explode(d.target.pos.clone(),0xff6600,18);
-    scoreD++;document.getElementById('sc-def').textContent=scoreD;
-    removeEnemy(d.target);scene.remove(d.mesh);d.alive=false;usedD=Math.max(0,usedD-1);
-    defenders=defenders.filter(function(x){return x!==d;});if(focused===d)focused=defenders[0]||null;refreshBar();
-    toast('✓ درون #'+d.id+' اعترض التهديد!');
+  if(!e.alive) return;
+  var toT=e.target.clone().sub(e.pos);
+  var dist=toT.length();
+
+  if(dist<15){
+    scoreA++;
+    document.getElementById('sc-atk').textContent=scoreA;
+    explode(e.pos.clone(),0xff4400,20);
+    removeEnemy(e);
+    showAlert('⚠ تهديد وصل للهدف!');
+    return;
+  }
+
+  var dir=toT.normalize();
+  var mv=dir.clone();
+  var t=gtime;
+
+  if(e.pattern==='spiral'){mv.x+=Math.sin(t*1.2+e.phase)*0.7;mv.z+=Math.cos(t*1.2+e.phase)*0.7;}
+  else if(e.pattern==='zigzag'){mv.x+=Math.sin(t*2+e.phase)*1.0;mv.y+=Math.sin(t*0.8+e.phase)*0.25;}
+  else if(e.pattern==='low'&&dist>60){mv.y-=0.5;if(e.pos.y<12)mv.y+=0.8;}
+  else if(e.pattern==='high'){mv.y+=(dist>180?0.6:-0.4);}
+
+  mv.normalize();
+  e.vel.lerp(mv.clone().multiplyScalar(e.speed),dt*2);
+  e.pos.addScaledVector(e.vel,dt);
+  if(e.pos.y<8) e.pos.y=8;
+  e.mesh.position.copy(e.pos);
+  if(e.vel.length()>0.5) e.mesh.lookAt(e.pos.clone().add(e.vel));
+  e.mesh.children.forEach(function(c){if(c.userData.isRotor)c.rotation.y+=dt*20;});
+
+  // Exhaust trail
+  if(Math.random()<0.3){
+    addTrail(e.pos.clone(),0xff3300,0.8);
   }
 }
+
+function removeEnemy(e){
+  scene.remove(e.mesh);
+  e.alive=false;
+  enemies=enemies.filter(function(x){return x!==e;});
+  // Defenders locked to this enemy — they lost their target, go ascend
+  defenders.forEach(function(d){
+    if(d.target===e && d.alive && d.state==='hunting'){
+      d.state='ascending';
+      d.ascendTimer=3.0;
+      d.lostTarget=true;
+    }
+  });
+  refreshBar();
+}
+
+// ═══════════════════════════════════════
+// UPDATE DEFENDER — 120° FOV lock + ascend
+// ═══════════════════════════════════════
+function updateDefender(d,dt){
+  if(!d.alive) return;
+
+  // STATE: ascending (lost target or evaded)
+  if(d.state==='ascending'){
+    d.ascendTimer-=dt;
+    // Fly straight up
+    d.vel.lerp(new THREE.Vector3(0,d.speed,0),dt*3);
+    d.pos.addScaledVector(d.vel,dt);
+    d.mesh.position.copy(d.pos);
+    d.mesh.rotation.set(-Math.PI/2,0,0); // nose up
+
+    // 6DOF: pure Y movement
+    d.vx=0; d.vy=d.speed; d.vz=0;
+    d.roll=0; d.pitch=Math.PI/2; d.yaw=0;
+
+    addTrail(d.pos.clone(),0x0044ff,0.6);
+
+    if(d.ascendTimer<=0){
+      // EXPLODE harmlessly
+      explode(d.pos.clone(),0x004488,8);
+      scene.remove(d.mesh);
+      d.alive=false;
+      defenders=defenders.filter(function(x){return x!==d;});
+      usedDrones=Math.max(0,usedDrones-1);
+      if(focused===d) focused=defenders.find(function(x){return x.alive;})||null;
+      refreshBar();
+      toast('💨 درون #'+d.id+' انفجر بأمان في الجو');
+    }
+    return;
+  }
+
+  // STATE: hunting — target is LOCKED, check if still in 120° FOV
+  if(!d.target || !d.target.alive){
+    // Target destroyed — ascend
+    d.state='ascending';
+    d.ascendTimer=3.0;
+    return;
+  }
+
+  // Direction to target
+  var toTarget=d.target.pos.clone().sub(d.pos);
+  var dist=toTarget.length();
+  var dirToTarget=toTarget.normalize();
+
+  // Check 120° FOV — is target within cone in front of defender?
+  var defForward=d.vel.length()>0.5 ? d.vel.clone().normalize() : dirToTarget.clone();
+  var dotProd=defForward.dot(dirToTarget);
+
+  // If target left 120° FOV (cos60°=0.5), switch to ascending
+  if(dist>10 && d.vel.length()>2 && dotProd < FOV_HALF){
+    d.state='ascending';
+    d.ascendTimer=3.0;
+    toast('📡 درون #'+d.id+' فقد الهدف — صاعد');
+    return;
+  }
+
+  // Predict intercept position
+  var timeEst=dist/d.speed;
+  var predictPos=d.target.pos.clone().addScaledVector(d.target.vel,timeEst*0.55);
+  var dir=predictPos.sub(d.pos).normalize();
+
+  // Smooth pursuit
+  d.vel.lerp(dir.clone().multiplyScalar(d.speed),dt*3.5);
+  d.pos.addScaledVector(d.vel,dt);
+  if(d.pos.y<5) d.pos.y=5;
+  d.mesh.position.copy(d.pos);
+  if(d.vel.length()>0.5) d.mesh.lookAt(d.pos.clone().add(d.vel));
+  d.mesh.children.forEach(function(c){if(c.userData.isRotor)c.rotation.y+=dt*22;});
+
+  // 6DOF values
+  d.vx=d.vel.x; d.vy=d.vel.y; d.vz=d.vel.z;
+  d.roll=Math.sin(gtime*3+d.id*1.3)*0.4;
+  d.pitch=Math.atan2(dir.y,Math.sqrt(dir.x*dir.x+dir.z*dir.z));
+  d.yaw=Math.atan2(dir.x,dir.z);
+
+  addTrail(d.pos.clone(),0x0066ff,0.5);
+
+  // Intercept!
+  if(dist<8){
+    explode(d.pos.clone(),0x0066ff,10);
+    explode(d.target.pos.clone(),0xff6600,22);
+    scoreD++;
+    document.getElementById('sc-def').textContent=scoreD;
+    removeEnemy(d.target);
+    scene.remove(d.mesh);
+    d.alive=false;
+    defenders=defenders.filter(function(x){return x!==d;});
+    usedDrones=Math.max(0,usedDrones-1);
+    if(focused===d) focused=defenders.find(function(x){return x.alive;})||null;
+    refreshBar();
+    toast('✓ درون #'+d.id+' دمّر التهديد #'+d.target.id+'!');
+  }
+}
+
+// ═══════════════════════════════════════
+// TRAIL PARTICLES
+// ═══════════════════════════════════════
+function addTrail(pos,color,size){
+  var m=new THREE.Mesh(
+    new THREE.SphereGeometry(size,4,4),
+    new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.6})
+  );
+  m.position.copy(pos);
+  scene.add(m);
+  trailParticles.push({m:m,life:0.5,decay:0.04});
+}
+
+function updateTrails(dt){
+  trailParticles=trailParticles.filter(function(p){
+    p.life-=p.decay;
+    if(p.life<=0){scene.remove(p.m);return false;}
+    p.m.material.opacity=p.life*0.6;
+    p.m.scale.setScalar(p.life*0.7+0.1);
+    return true;
+  });
+}
+
+// ═══════════════════════════════════════
+// EXPLOSIONS
+// ═══════════════════════════════════════
 function explode(pos,color,count){
   count=count||12;
   for(var i=0;i<count;i++){
-    var m=new THREE.Mesh(new THREE.SphereGeometry(Math.random()*1.5+0.5,4,4),new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:1}));
-    m.position.copy(pos);scene.add(m);
-    particles.push({m:m,vel:new THREE.Vector3((Math.random()-.5)*25,(Math.random()-.5)*25,(Math.random()-.5)*25),life:1.0,decay:0.025+Math.random()*0.025});
+    var m=new THREE.Mesh(
+      new THREE.SphereGeometry(Math.random()*2+0.5,4,4),
+      new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:1})
+    );
+    m.position.copy(pos); scene.add(m);
+    var vel=new THREE.Vector3((Math.random()-.5)*30,(Math.random()-.5)*30,(Math.random()-.5)*30);
+    particles.push({m:m,vel:vel,life:1.0,decay:0.022+Math.random()*0.02});
   }
 }
+
 function updateParticles(dt){
   particles=particles.filter(function(p){
-    p.life-=p.decay;if(p.life<=0){scene.remove(p.m);return false;}
-    p.m.position.addScaledVector(p.vel,dt);p.vel.y-=15*dt;p.m.material.opacity=p.life;p.m.scale.setScalar(p.life*0.8+0.2);return true;
+    p.life-=p.decay;
+    if(p.life<=0){scene.remove(p.m);return false;}
+    p.m.position.addScaledVector(p.vel,dt);
+    p.vel.y-=18*dt;
+    p.m.material.opacity=p.life;
+    p.m.scale.setScalar(p.life*0.9+0.1);
+    return true;
   });
 }
-var RRANGE=2000,rblips=[];
+
+// ═══════════════════════════════════════
+// RADAR
+// ═══════════════════════════════════════
+var RRANGE=2000, rblips=[];
 function updateRadar(){
   rblips.forEach(function(b){b.remove();});rblips=[];
   var re=document.getElementById('radar');
   enemies.forEach(function(e){
     if(!e.alive)return;
-    var d=Math.sqrt(e.pos.x*e.pos.x+e.pos.z*e.pos.z);if(d>RRANGE)return;
+    var d=Math.sqrt(e.pos.x*e.pos.x+e.pos.z*e.pos.z);
+    if(d>RRANGE)return;
     var b=document.createElement('div');b.className='blip be';
-    b.style.left=((e.pos.x/RRANGE)*44+50)+'%';b.style.top=((e.pos.z/RRANGE)*44+50)+'%';
+    b.style.left=((e.pos.x/RRANGE)*44+50)+'%';
+    b.style.top=((e.pos.z/RRANGE)*44+50)+'%';
     re.appendChild(b);rblips.push(b);
   });
   defenders.forEach(function(df){
     if(!df.alive)return;
-    var d=Math.sqrt(df.pos.x*df.pos.x+df.pos.z*df.pos.z);if(d>RRANGE)return;
+    var d=Math.sqrt(df.pos.x*df.pos.x+df.pos.z*df.pos.z);
+    if(d>RRANGE)return;
     var b=document.createElement('div');b.className='blip bd';
-    b.style.left=((df.pos.x/RRANGE)*44+50)+'%';b.style.top=((df.pos.z/RRANGE)*44+50)+'%';
+    b.style.left=((df.pos.x/RRANGE)*44+50)+'%';
+    b.style.top=((df.pos.z/RRANGE)*44+50)+'%';
     re.appendChild(b);rblips.push(b);
   });
 }
-function setBar(id,val,max){
-  var el=document.getElementById('dof-'+id),vEl=document.getElementById('dv-'+id);
-  var pct=Math.min(Math.abs(val)/max*50,50);
+
+// ═══════════════════════════════════════
+// 6DOF DISPLAY
+// ═══════════════════════════════════════
+function setBar(id,val,mx){
+  var el=document.getElementById('dof-'+id);
+  var vEl=document.getElementById('dv-'+id);
+  var pct=Math.min(Math.abs(val)/mx*50,50);
   if(val>=0){el.style.marginLeft='50%';el.style.width=pct+'%';}
   else{el.style.marginLeft=(50-pct)+'%';el.style.width=pct+'%';}
   vEl.textContent=val.toFixed(0);
 }
 function update6DOF(d){
-  if(!d){['x','y','z','r','p','w'].forEach(function(a){document.getElementById('dof-'+a).style.width='0';document.getElementById('dv-'+a).textContent='0';});return;}
-  setBar('x',d.vx,d.speed);setBar('y',d.vy,d.speed);setBar('z',d.vz,d.speed);
-  setBar('r',d.roll*d.speed,d.speed);setBar('p',d.pitch*d.speed,d.speed);setBar('w',d.yaw*d.speed/Math.PI,d.speed);
+  if(!d){
+    ['x','y','z','r','p','w'].forEach(function(a){
+      document.getElementById('dof-'+a).style.width='0';
+      document.getElementById('dv-'+a).textContent='0';
+    });
+    return;
+  }
+  var spd=d.speed;
+  setBar('x',d.vx,spd);setBar('y',d.vy,spd);setBar('z',d.vz,spd);
+  setBar('r',d.roll*spd,spd);setBar('p',d.pitch*30,30);setBar('w',d.yaw*15,15);
 }
+
+// ═══════════════════════════════════════
+// HUD UPDATE
+// ═══════════════════════════════════════
 var hudT=0;
 function updateHUD(){
-  var ref=focused||{pos:{x:0,y:0,z:0},vel:new THREE.Vector3()};
-  document.getElementById('st-x').textContent=ref.pos.x?ref.pos.x.toFixed(0):'0';
-  document.getElementById('st-y').textContent=ref.pos.y?ref.pos.y.toFixed(0):'0';
-  document.getElementById('st-z').textContent=ref.pos.z?ref.pos.z.toFixed(0):'0';
-  document.getElementById('st-alt').textContent=ref.pos.y?ref.pos.y.toFixed(0):'0';
-  document.getElementById('st-spd').textContent=ref.vel?ref.vel.length().toFixed(0):'0';
-  document.getElementById('st-ready').textContent=totalD-usedD;
+  var ref=focused&&focused.alive?focused:null;
+  document.getElementById('st-x').textContent=ref?ref.pos.x.toFixed(0):'--';
+  document.getElementById('st-y').textContent=ref?ref.pos.y.toFixed(0):'--';
+  document.getElementById('st-z').textContent=ref?ref.pos.z.toFixed(0):'--';
+  document.getElementById('st-alt').textContent=ref?ref.pos.y.toFixed(0):'0';
+  document.getElementById('st-spd').textContent=ref?ref.vel.length().toFixed(0):'0';
+  document.getElementById('st-ready').textContent=totalDrones-usedDrones;
   document.getElementById('st-fly').textContent=defenders.filter(function(d){return d.alive;}).length;
+
+  // Round
+  var tot=scoreD+scoreA;
+  if(tot>0&&tot%5===0&&Math.floor(tot/5)+1>round){
+    round=Math.floor(tot/5)+1;
+    spawnI=Math.max(5,12-round*0.8);
+  }
   document.getElementById('sc-round').textContent=round;
+
+  // Threats
   var tl=document.getElementById('tlist');
-  if(enemies.length===0){tl.innerHTML='<span style="color:#ff333350">لا يوجد تهديد</span>';}
-  else{tl.innerHTML=enemies.slice(0,5).map(function(e){var dist=e.pos.length().toFixed(0),spd=e.vel.length().toFixed(0),eng=defenders.some(function(d){return d.target===e;})?'🔵':'  ',w=parseFloat(dist)<200?'⚠':' ';return'<div class="ti"><span class="ti-id">'+w+'#'+e.id+'</span><span class="ti-d">'+dist+'م</span><span class="ti-s">'+spd+'م/ث</span><span class="ti-p">'+eng+e.pattern+'</span></div>';}).join('');}
+  var live=enemies.filter(function(e){return e.alive;});
+  if(live.length===0){tl.innerHTML='<span style="color:#ff333340">لا يوجد تهديد</span>';}
+  else{
+    tl.innerHTML=live.slice(0,5).map(function(e){
+      var dist=e.pos.length().toFixed(0);
+      var spd=e.vel.length().toFixed(0);
+      var lockedBy=defenders.filter(function(d){return d.alive&&d.target===e;}).length;
+      var lockStr=lockedBy>0?'🔒×'+lockedBy:'';
+      var warn=parseFloat(dist)<200?'⚠':'';
+      return '<div class="titem"><span class="t-id">'+warn+'#'+e.id+'</span><span class="t-dist">'+dist+'م</span><span class="t-spd">'+spd+'م/ث</span><span class="t-pat">'+e.pattern+'</span><span class="t-lock">'+lockStr+'</span></div>';
+    }).join('');
+  }
+
+  // Active drones
   var al=document.getElementById('adlist');
-  if(defenders.length===0){al.innerHTML='<span style="color:#00aaff30">لا يوجد</span>';}
-  else{al.innerHTML=defenders.filter(function(d){return d.alive;}).map(function(d){var dist=d.target?d.pos.distanceTo(d.target.pos).toFixed(0):'--';return'<div class="adi"><span class="ai-id">🚁#'+d.id+'</span><span class="ai-t">→#'+(d.target?d.target.id:'?')+'</span><span class="ai-d">'+dist+'م</span></div>';}).join('');}
-  var tot=scoreD+scoreA;if(tot>0&&tot%5===0)round=Math.floor(tot/5)+1;
-  update6DOF(focused);
+  var live2=defenders.filter(function(d){return d.alive;});
+  if(live2.length===0){al.innerHTML='<span style="color:#00aaff25">لا يوجد</span>';}
+  else{
+    al.innerHTML=live2.map(function(d){
+      var dist=d.target&&d.target.alive?d.pos.distanceTo(d.target.pos).toFixed(0):'--';
+      var stateAr=d.state==='hunting'?'🎯':d.state==='ascending'?'⬆('+d.ascendTimer.toFixed(1)+')':'💥';
+      return '<div class="adi"><span class="ai-id">#'+d.id+'</span><span class="ai-t">→#'+(d.target?d.target.id:'?')+'</span><span class="ai-d">'+dist+'م</span><span class="ai-s">'+stateAr+'</span></div>';
+    }).join('');
+  }
+
+  update6DOF(focused&&focused.alive?focused:null);
 }
-function updateCamera(dt){
-  camAngle+=dt*0.05;
-  camera.position.set(Math.sin(camAngle)*380,280,Math.cos(camAngle)*380);
-  camera.lookAt(0,20,0);
+
+// ═══════════════════════════════════════
+// CAMERA CONTROL
+// ═══════════════════════════════════════
+document.addEventListener('mousedown',function(e){isDragging=true;lastMX=e.clientX;lastMY=e.clientY;});
+document.addEventListener('mouseup',function(){isDragging=false;});
+document.addEventListener('mousemove',function(e){
+  if(!isDragging)return;
+  camTheta-=(e.clientX-lastMX)*0.008;
+  camPhi=Math.max(0.05,Math.min(0.6,camPhi-(e.clientY-lastMY)*0.005));
+  lastMX=e.clientX;lastMY=e.clientY;
+});
+var touchStart={x:0,y:0};
+document.addEventListener('touchstart',function(e){
+  if(e.target.id==='lbtn')return;
+  isDragging=true;touchStart.x=e.touches[0].clientX;touchStart.y=e.touches[0].clientY;
+},{passive:true});
+document.addEventListener('touchend',function(){isDragging=false;},{passive:true});
+document.addEventListener('touchmove',function(e){
+  if(!isDragging||e.target.id==='lbtn')return;
+  camTheta-=(e.touches[0].clientX-touchStart.x)*0.008;
+  camPhi=Math.max(0.05,Math.min(0.6,camPhi-(e.touches[0].clientY-touchStart.y)*0.005));
+  touchStart.x=e.touches[0].clientX;touchStart.y=e.touches[0].clientY;
+},{passive:true});
+
+function updateCamera(){
+  var x=Math.sin(camTheta)*Math.cos(camPhi)*camDist;
+  var y=Math.sin(camPhi)*camDist+15;
+  var z=Math.cos(camTheta)*Math.cos(camPhi)*camDist;
+  camera.position.set(x,y,z);
+  camera.lookAt(camTarget);
 }
+
+// ═══════════════════════════════════════
+// ALERT / TOAST
+// ═══════════════════════════════════════
 var alertTO;
-function showAlert(msg){var el=document.getElementById('alertbox');el.textContent=msg;el.style.display='block';clearTimeout(alertTO);alertTO=setTimeout(function(){el.style.display='none';},2500);}
-var toastTO;
-function toast(msg){var el=document.getElementById('_t');if(!el){el=document.createElement('div');el.id='_t';el.style.cssText='position:fixed;bottom:175px;left:50%;transform:translateX(-50%);background:rgba(0,15,0,0.95);border:1px solid #00ff41;color:#00ff41;padding:7px 16px;border-radius:6px;font-family:monospace;font-size:.7rem;z-index:100;letter-spacing:1px;white-space:nowrap;pointer-events:none';document.body.appendChild(el);}el.textContent=msg;el.style.opacity='1';clearTimeout(toastTO);toastTO=setTimeout(function(){el.style.opacity='0';},2500);}
+function showAlert(msg){
+  var el=document.getElementById('alertbox');
+  el.textContent=msg;el.style.display='block';
+  clearTimeout(alertTO);alertTO=setTimeout(function(){el.style.display='none';},2500);
+}
+var toastTO,toastEl;
+function toast(msg){
+  if(!toastEl){
+    toastEl=document.createElement('div');
+    toastEl.style.cssText='position:fixed;bottom:165px;left:50%;transform:translateX(-50%);background:rgba(0,12,0,0.95);border:1px solid #00ff41;color:#00ff41;padding:6px 14px;border-radius:6px;font-family:monospace;font-size:.68rem;z-index:100;letter-spacing:1px;white-space:nowrap;pointer-events:none;transition:opacity .3s';
+    document.body.appendChild(toastEl);
+  }
+  toastEl.textContent=msg;toastEl.style.opacity='1';
+  clearTimeout(toastTO);toastTO=setTimeout(function(){toastEl.style.opacity='0';},2800);
+}
+
+// ═══════════════════════════════════════
+// MAIN LOOP
+// ═══════════════════════════════════════
 var lastT=0;
 spawnEnemy();
+
 function animate(ts){
   requestAnimationFrame(animate);
-  var dt=Math.min((ts-lastT)/1000,0.05);lastT=ts;gtime+=dt;
+  var dt=Math.min((ts-lastT)/1000,0.05);
+  lastT=ts; gtime+=dt;
+
+  // Spawn
   spawnT+=dt;
-  if(spawnT>spawnI){spawnT=0;spawnEnemy();if(round>=3)spawnI=Math.max(5,10-round);}
+  if(spawnT>spawnI){spawnT=0;spawnEnemy();}
+
+  // Update
   enemies.forEach(function(e){updateEnemy(e,dt);});
   defenders.forEach(function(d){updateDefender(d,dt);});
-  updateParticles(dt);updateCamera(dt);
-  if(homeBase.children[1])homeBase.children[1].material.opacity=0.1+Math.sin(gtime*3)*0.08;
-  hudT+=dt;if(hudT>0.1){hudT=0;updateRadar();updateHUD();}
+  updateParticles(dt);
+  updateTrails(dt);
+  updateCamera();
+
+  // Base ring pulse
+  if(homeGroup.children[1])
+    homeGroup.children[1].material.opacity=0.08+Math.sin(gtime*2.5)*0.06;
+
+  // HUD
+  hudT+=dt;
+  if(hudT>0.1){hudT=0;updateRadar();updateHUD();}
+
   renderer.render(scene,camera);
 }
+
 animate(0);
-window.addEventListener('resize',function(){var w=window.innerWidth,h=window.innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);});
+
+window.addEventListener('resize',function(){
+  var w=window.innerWidth,h=window.innerHeight;
+  camera.aspect=w/h;camera.updateProjectionMatrix();
+  renderer.setSize(w,h);
+});
 </script>
 </body>
 </html>
