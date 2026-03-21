@@ -3,27 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>PAC-3 CRI — محاكاة فيزيائية</title>
+<title>PAC-3 CRI — محاكاة</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000308;overflow:hidden;font-family:'Courier New',monospace;color:#00ff88;user-select:none}
-#cv{display:block;width:100vw;height:100vh}
-#scorebar{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,5,15,0.93);border:1px solid #00aaff25;border-radius:99px;padding:6px 20px;display:flex;gap:16px;font-size:.7rem;white-space:nowrap;z-index:20}
-.scd{color:#00ff88}.sca{color:#ff4444}.scr{color:#fbbf24}.scs{color:#ffffff15}
-#threats{position:fixed;top:10px;left:10px;background:rgba(10,0,0,0.92);border:1px solid #ff444425;border-radius:8px;padding:8px 12px;font-size:.62rem;min-width:192px;z-index:20}
-#tt{color:#ff444455;font-size:.55rem;letter-spacing:2px;margin-bottom:4px}
-.titem{display:flex;gap:4px;border-bottom:1px solid #ff333312;padding:2px 0;align-items:center}
-.t-id{color:#ff6060;width:26px}.t-d{color:#ff9900;width:44px}.t-spd{color:#ffcc00;width:52px}.t-pat{color:#ff505055;font-size:.55rem;flex:1}.t-lk{font-size:.58rem;color:#00aaff}
-#stats{position:fixed;top:10px;right:10px;background:rgba(0,5,15,0.92);border:1px solid #00aaff20;border-radius:8px;padding:8px 12px;font-size:.65rem;line-height:1.9;min-width:175px;z-index:20}
-.sr{display:flex;justify-content:space-between;gap:8px}
-.sk{color:#00aaff50}.sv{color:#00aaff;font-weight:bold}.sv-hot{color:#ff9900;font-weight:bold}
-#physics-panel{position:fixed;top:50%;right:10px;transform:translateY(-50%);background:rgba(0,5,15,0.92);border:1px solid #00aaff20;border-radius:8px;padding:8px 12px;font-size:.62rem;line-height:1.9;min-width:155px;z-index:20}
-.pp-title{color:#00aaff60;font-size:.55rem;letter-spacing:2px;margin-bottom:4px}
-.pp-r{display:flex;justify-content:space-between;gap:6px}
-.pp-k{color:#00aaff50}.pp-v{color:#00ff88;font-weight:bold}.pp-v2{color:#fbbf24;font-weight:bold}
-#radar-wrap{position:fixed;bottom:12px;left:12px;z-index:20}
-#radar{width:155px;height:155px;border-radius:50%;background:rgba(0,5,15,0.93);border:1px solid #00aaff30;position:relative;overflow:hidden}
-#radar::after{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50%50%,transparent 0,transparent 36px,#00aaff0d 37px,transparent 38px,transparent 73px,#00aaff0d 74px,transparent 75px)}
+body{background:#000308;overflow:hidden;font-family:'Courier New',monospace;color:#00ff88;user-select:none;display:flex;flex-direction:column;height:100vh}
+
+/* ── TOP: GAME SCREEN ── */
+#game-screen{
+  position:relative;
+  flex:1 1 0;
+  min-height:0;
+  overflow:hidden;
+}
+#cv{display:block;width:100%;height:100%}
+
+/* Radar — only overlay on game screen, bottom-left */
+#radar-wrap{position:absolute;bottom:10px;left:10px;z-index:10}
+#radar{width:130px;height:130px;border-radius:50%;background:rgba(0,5,15,0.88);border:1px solid #00aaff30;position:relative;overflow:hidden}
+#radar::after{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50%50%,transparent 0,transparent 30px,#00aaff0d 31px,transparent 32px,transparent 62px,#00aaff0d 63px,transparent 64px)}
 #rsweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(0,170,255,.4) 0deg,transparent 60deg);transform-origin:center;animation:sw 3s linear infinite}
 @keyframes sw{to{transform:rotate(360deg)}}
 #rlines{position:absolute;inset:0}
@@ -31,74 +28,178 @@ body{background:#000308;overflow:hidden;font-family:'Courier New',monospace;colo
 #rlines::before{width:1px;height:100%;left:50%}
 #rlines::after{width:100%;height:1px;top:50%}
 .blip{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
-.be{width:7px;height:7px;background:#ff4444;box-shadow:0 0 8px #ff4444}
-.bp{width:5px;height:5px;background:#00aaff;box-shadow:0 0 6px #00aaff}
-.bh{width:8px;height:8px;background:#00ff88;box-shadow:0 0 10px #00ff88;left:50%!important;top:50%!important}
-#rlabel{font-size:.55rem;color:#00aaff55;text-align:center;margin-top:2px;letter-spacing:2px}
-#dof-wrap{position:fixed;bottom:12px;right:12px;width:160px;z-index:20}
-#dof-title{font-size:.55rem;color:#00aaff70;letter-spacing:2px;text-align:center;margin-bottom:4px}
-#dof-box{background:rgba(0,5,15,0.92);border:1px solid #00aaff20;border-radius:8px;padding:8px}
-.dr{display:flex;align-items:center;gap:5px;margin-bottom:4px}
-.dl{font-size:.55rem;color:#00aaff60;width:24px;text-align:center}
-.dbw{flex:1;height:5px;background:rgba(0,170,255,.08);border-radius:3px;overflow:hidden;position:relative}
-.db{height:100%;border-radius:3px;transition:width .06s,margin-left .06s}
-.dcc{position:absolute;left:50%;top:0;width:1px;height:100%;background:#00aaff25}
-.dv{font-size:.55rem;color:#00aaff;width:28px;text-align:right}
+.be{width:6px;height:6px;background:#ff4444;box-shadow:0 0 7px #ff4444}
+.bp{width:5px;height:5px;background:#00aaff;box-shadow:0 0 5px #00aaff}
+.bh{width:7px;height:7px;background:#00ff88;box-shadow:0 0 8px #00ff88;left:50%!important;top:50%!important}
+#rlabel{font-size:.48rem;color:#00aaff40;text-align:center;margin-top:2px;letter-spacing:2px}
+
+/* Score — top center of game screen */
+#scorebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,5,15,0.85);border:1px solid #00aaff20;border-radius:99px;padding:5px 18px;display:flex;gap:14px;font-size:.7rem;white-space:nowrap;z-index:10}
+.scd{color:#00ff88}.sca{color:#ff4444}.scr{color:#fbbf24}.scs{color:#ffffff15}
+
+/* Alert overlay */
+#alertbox{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(18,0,0,.97);border:2px solid #ff4444;border-radius:10px;padding:10px 22px;color:#ff4444;font-size:.78rem;letter-spacing:2px;display:none;text-align:center;z-index:50}
+
+/* ── BOTTOM: DATA PANEL ── */
+#data-panel{
+  height:220px;
+  flex-shrink:0;
+  background:#00040e;
+  border-top:1px solid #00aaff18;
+  display:grid;
+  grid-template-columns: 170px 1fr 160px 160px 175px;
+  gap:0;
+  overflow:hidden;
+}
+.dp-col{
+  border-left:1px solid #00aaff10;
+  padding:8px 10px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.dp-col:first-child{border-left:none}
+.dp-title{font-size:.5rem;letter-spacing:2px;color:#00aaff40;margin-bottom:3px;text-transform:uppercase}
+
+/* Sector col */
+#col-sector{background:#0a0800}
+.dp-title-warn{color:#fbbf2440}
+#compass-wrap{position:relative;width:90px;height:90px;margin:0 auto 4px;border-radius:50%;border:1px solid #fbbf2425;background:rgba(0,3,10,0.8)}
+#compass-cv{position:absolute;inset:0}
+.cdir{position:absolute;font-size:.45rem;color:#fbbf2470}
+.sec-input-row{display:flex;align-items:center;gap:4px;font-size:.55rem}
+.sec-input-row input{flex:1;accent-color:#fbbf24;height:14px}
+.sec-val{color:#fbbf24;min-width:28px;font-size:.58rem}
+.sec-lbl{color:#ff6060;font-size:.55rem;text-align:center;margin-top:2px}
+
+/* Threats col */
+#col-threats{background:#08000a}
+.dp-title-thr{color:#ff444440}
+.titem{display:flex;gap:4px;border-bottom:1px solid #ff333312;padding:2px 0;align-items:center;font-size:.58rem}
+.t-id{color:#ff6060;width:22px}.t-d{color:#ff9900;width:40px}.t-spd{color:#ffcc00;width:48px}.t-pat{color:#ff505055;font-size:.52rem;flex:1}.t-lk{font-size:.55rem;color:#00aaff}
+
+/* PAC-3 missiles col */
+#col-missiles{background:#000810}
+.dp-title-mis{color:#00aaff40}
+.ami{display:flex;justify-content:space-between;gap:4px;padding:2px 0;border-bottom:1px solid #00aaff10;font-size:.58rem}
+.am-id{color:#00aaff}.am-t{color:#ff505065;font-size:.52rem}.am-d{color:#00ff8870}.am-s{font-size:.52rem;color:#fbbf24}
+/* missile dots */
+#dcbar{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.dcd{width:8px;height:8px;border-radius:50%;background:#00aaff;box-shadow:0 0 5px #00aaff;transition:all .3s}
+.dcd.used{background:#00aaff15;box-shadow:none}
+
+/* 6DOF col */
+#col-dof{background:#000508}
+.dp-title-dof{color:#00aaff40}
+.dr{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.dl{font-size:.5rem;color:#00aaff60;width:22px;text-align:center}
+.dbw{flex:1;height:4px;background:rgba(0,170,255,.08);border-radius:2px;overflow:hidden;position:relative}
+.db{height:100%;border-radius:2px}
+.dcc{position:absolute;left:50%;top:0;width:1px;height:100%;background:#00aaff20}
+.dv{font-size:.5rem;color:#00aaff;width:26px;text-align:right}
 .ax-x .db{background:#ff7070}.ax-y .db{background:#70ff88}.ax-z .db{background:#7070ff}
 .ax-r .db{background:#ff70ff}.ax-p .db{background:#ffff70}.ax-w .db{background:#70ffff}
-#amis{position:fixed;bottom:178px;right:12px;background:rgba(0,5,15,0.92);border:1px solid #00aaff20;border-radius:8px;padding:7px 10px;font-size:.6rem;min-width:158px;z-index:20}
-#amt{color:#00aaff50;font-size:.55rem;letter-spacing:2px;margin-bottom:3px}
-.ami{display:flex;justify-content:space-between;gap:4px;padding:2px 0;border-bottom:1px solid #00aaff10}
-.am-id{color:#00aaff}.am-t{color:#ff505065;font-size:.55rem}.am-d{color:#00ff8870}.am-s{font-size:.55rem;color:#fbbf24}
-#launch-wrap{position:fixed;bottom:178px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;z-index:20}
-#lbtn{background:rgba(0,5,20,0.97);border:2px solid #00aaff;color:#00aaff;padding:13px 36px;border-radius:10px;font-family:monospace;font-size:.88rem;cursor:pointer;letter-spacing:2px;transition:all .15s;-webkit-tap-highlight-color:transparent}
+
+/* PAC-3 specs col */
+#col-specs{background:#000308}
+.dp-title-sp{color:#00aaff40}
+.pp-r{display:flex;justify-content:space-between;gap:4px;font-size:.58rem;padding:1px 0}
+.pp-k{color:#00aaff40}.pp-v{color:#00ff88;font-weight:bold}.pp-v2{color:#fbbf24;font-weight:bold}
+/* Mach / phase / G readout */
+.live-r{display:flex;justify-content:space-between;gap:4px;font-size:.62rem;padding:2px 0;border-bottom:1px solid #00aaff10}
+.live-k{color:#00aaff50}.live-v{color:#00aaff;font-weight:bold}.live-hot{color:#ff9900;font-weight:bold}
+
+/* Launch button row — inside bottom panel, stretched */
+#launch-row{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:44px;
+  background:#00040e;
+  border-top:1px solid #00aaff12;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  z-index:5;
+}
+#lbtn{background:rgba(0,5,20,0.97);border:2px solid #00aaff;color:#00aaff;padding:8px 32px;border-radius:8px;font-family:monospace;font-size:.82rem;cursor:pointer;letter-spacing:2px;transition:all .15s;-webkit-tap-highlight-color:transparent}
 #lbtn:active{transform:scale(.93);background:rgba(0,170,255,.12)}
 #lbtn:disabled{opacity:.2;border-color:#00aaff25;cursor:not-allowed}
-#lstatus{font-size:.62rem;color:#00aaff50;letter-spacing:1px;text-align:center}
-#dcbar{display:flex;gap:5px;margin-top:2px}
-.dcd{width:9px;height:9px;border-radius:50%;background:#00aaff;box-shadow:0 0 5px #00aaff;transition:all .3s}
-.dcd.used{background:#00aaff20;box-shadow:none}
-#alertbox{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(18,0,0,.97);border:2px solid #ff4444;border-radius:10px;padding:10px 22px;color:#ff4444;font-size:.78rem;letter-spacing:2px;display:none;text-align:center;z-index:50}
-#badge{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);color:#00aaff25;font-size:.5rem;letter-spacing:2px;z-index:10;text-align:center}
+#lstatus{font-size:.6rem;color:#00aaff50;letter-spacing:1px}
+
+/* toast */
+#toast{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);background:rgba(0,5,20,.97);border:1px solid #00aaff;color:#00aaff;padding:5px 12px;border-radius:6px;font-size:.62rem;z-index:100;letter-spacing:1px;white-space:nowrap;pointer-events:none;transition:opacity .4s;opacity:0}
 </style>
 </head>
 <body>
-<canvas id="cv"></canvas>
-<div id="scorebar">
-  <span class="scd">🛡 <strong id="sc-def">0</strong></span>
-  <span class="scs">|</span>
-  <span class="sca">☠ <strong id="sc-atk">0</strong></span>
-  <span class="scs">|</span>
-  <span class="scr">جولة <strong id="sc-round">1</strong></span>
+
+<!-- ══ TOP: GAME SCREEN ══ -->
+<div id="game-screen">
+  <canvas id="cv"></canvas>
+  <!-- Radar only overlay -->
+  <div id="radar-wrap">
+    <div id="radar"><div id="rlines"></div><div id="rsweep"></div><div class="blip bh"></div></div>
+    <div id="rlabel">AN/MPQ-65 ▸ RADAR</div>
+  </div>
+  <!-- Score -->
+  <div id="scorebar">
+    <span class="scd">🛡 <strong id="sc-def">0</strong></span>
+    <span class="scs">|</span>
+    <span class="sca">☠ <strong id="sc-atk">0</strong></span>
+    <span class="scs">|</span>
+    <span class="scr">جولة <strong id="sc-round">1</strong></span>
+  </div>
+  <div id="alertbox"></div>
+  <div id="toast"></div>
 </div>
-<div id="threats"><div id="tt">▼ تهديدات مرصودة</div><div id="tlist"></div></div>
-<div id="stats">
-  <div class="sr"><span class="sk">X</span><span class="sv" id="st-x">--</span></div>
-  <div class="sr"><span class="sk">Y (ارتفاع)</span><span class="sv" id="st-y">--</span></div>
-  <div class="sr"><span class="sk">Z</span><span class="sv" id="st-z">--</span></div>
-  <div class="sr"><span class="sk">Mach</span><span class="sv" id="st-mach">--</span></div>
-  <div class="sr"><span class="sk">G-Load</span><span class="sv" id="st-g">--</span></div>
-  <div class="sr"><span class="sk">مرحلة</span><span class="sv" id="st-phase">--</span></div>
-  <div class="sr"><span class="sk">صواريخ</span><span class="sv" id="st-ready">8</span></div>
-</div>
-<div id="physics-panel">
-  <div class="pp-title">فيزياء PAC-3 CRI</div>
-  <div class="pp-r"><span class="pp-k">CP</span><span class="pp-v">3.83م</span></div>
-  <div class="pp-r"><span class="pp-k">CG إطلاق</span><span class="pp-v">2.23م</span></div>
-  <div class="pp-r"><span class="pp-k">استقرار</span><span class="pp-v">6.4 cal</span></div>
-  <div class="pp-r"><span class="pp-k">دفع أقصى</span><span class="pp-v">150kN</span></div>
-  <div class="pp-r"><span class="pp-k">T/W</span><span class="pp-v">24G</span></div>
-  <div class="pp-r"><span class="pp-k">CD ماخ5</span><span class="pp-v">0.24</span></div>
-  <div class="pp-r"><span class="pp-k">زاوية رؤية</span><span class="pp-v">120°</span></div>
-  <div class="pp-r"><span class="pp-k">مناورة</span><span class="pp-v2">40G</span></div>
-</div>
-<div id="radar-wrap">
-  <div id="radar"><div id="rlines"></div><div id="rsweep"></div><div class="blip bh"></div></div>
-  <div id="rlabel">AN/MPQ-65 ▸ RADAR</div>
-</div>
-<div id="dof-wrap">
-  <div id="dof-title">6DOF — PAC-3 نشط</div>
-  <div id="dof-box">
+
+<!-- ══ BOTTOM: DATA PANEL ══ -->
+<div id="data-panel">
+
+  <!-- COL 1: Sector Control -->
+  <div class="dp-col" id="col-sector">
+    <div class="dp-title dp-title-warn">قطاع التهديد</div>
+    <div id="compass-wrap">
+      <canvas id="compass-cv" width="90" height="90"></canvas>
+      <span class="cdir" style="top:2px;left:50%;transform:translateX(-50%)">ش</span>
+      <span class="cdir" style="bottom:2px;left:50%;transform:translateX(-50%)">ج</span>
+      <span class="cdir" style="left:2px;top:50%;transform:translateY(-50%)">غ</span>
+      <span class="cdir" style="right:2px;top:50%;transform:translateY(-50%)">ش.ر</span>
+    </div>
+    <div class="sec-input-row">
+      <span style="color:#fbbf2450;font-size:.5rem">من</span>
+      <input id="sec-from" type="range" min="0" max="360" value="45" oninput="updateSector()">
+      <span class="sec-val" id="sec-from-val">45°</span>
+    </div>
+    <div class="sec-input-row">
+      <span style="color:#fbbf2450;font-size:.5rem">إلى</span>
+      <input id="sec-to" type="range" min="0" max="360" value="315" oninput="updateSector()">
+      <span class="sec-val" id="sec-to-val">315°</span>
+    </div>
+    <div class="sec-lbl" id="sec-label">ش.ش.ر ← → ش.غ</div>
+    <div style="text-align:center;font-size:.5rem;color:#fbbf2440" id="sec-deg">270° قطاع</div>
+  </div>
+
+  <!-- COL 2: Threats -->
+  <div class="dp-col" id="col-threats">
+    <div class="dp-title dp-title-thr">▼ تهديدات مرصودة</div>
+    <div id="tlist"></div>
+  </div>
+
+  <!-- COL 3: PAC-3 Missiles -->
+  <div class="dp-col" id="col-missiles">
+    <div class="dp-title dp-title-mis">▶ PAC-3 في الجو</div>
+    <div id="amlist"></div>
+    <div style="margin-top:auto;padding-top:4px">
+      <div class="dp-title dp-title-mis" style="margin-bottom:3px">مخزون الصواريخ</div>
+      <div id="dcbar"></div>
+    </div>
+  </div>
+
+  <!-- COL 4: 6DOF -->
+  <div class="dp-col" id="col-dof">
+    <div class="dp-title dp-title-dof">6DOF — PAC-3 نشط</div>
     <div class="dr ax-x"><span class="dl">Vx</span><div class="dbw"><div class="db" id="dof-x"></div><div class="dcc"></div></div><span class="dv" id="dv-x">0</span></div>
     <div class="dr ax-y"><span class="dl">Vy</span><div class="dbw"><div class="db" id="dof-y"></div><div class="dcc"></div></div><span class="dv" id="dv-y">0</span></div>
     <div class="dr ax-z"><span class="dl">Vz</span><div class="dbw"><div class="db" id="dof-z"></div><div class="dcc"></div></div><span class="dv" id="dv-z">0</span></div>
@@ -106,40 +207,33 @@ body{background:#000308;overflow:hidden;font-family:'Courier New',monospace;colo
     <div class="dr ax-p"><span class="dl">Pit</span><div class="dbw"><div class="db" id="dof-p"></div><div class="dcc"></div></div><span class="dv" id="dv-p">0</span></div>
     <div class="dr ax-w"><span class="dl">Yaw</span><div class="dbw"><div class="db" id="dof-w"></div><div class="dcc"></div></div><span class="dv" id="dv-w">0</span></div>
   </div>
-</div>
-<div id="amis"><div id="amt">▶ PAC-3 في الجو</div><div id="amlist"></div></div>
-<div id="launch-wrap">
-  <button id="lbtn" onclick="launchPAC3()">🚀 أطلق PAC-3</button>
-  <div id="lstatus">جاهز</div>
-  <div id="dcbar"></div>
-</div>
-<div id="alertbox"></div>
-<div id="badge">PAC-3 CRI | CP=3.83m | CG=2.23m | Stab=6.4cal | Thrust=75kN avg | CD(M5)=0.24 | 40G max</div>
 
-<!-- SECTOR CONTROL -->
-<div id="sector-panel" style="position:fixed;top:50%;left:10px;transform:translateY(-50%);background:rgba(0,5,15,0.93);border:1px solid #fbbf2430;border-radius:10px;padding:10px 14px;z-index:20;min-width:170px">
-  <div style="color:#fbbf2470;font-size:.55rem;letter-spacing:2px;margin-bottom:8px;text-align:center">▼ قطاع التهديد</div>
-  <!-- Compass mini -->
-  <div style="position:relative;width:100px;height:100px;margin:0 auto 10px;border-radius:50%;border:1px solid #fbbf2425;background:rgba(0,3,10,0.8)" id="compass-wrap">
-    <canvas id="compass-cv" width="100" height="100" style="position:absolute;inset:0"></canvas>
-    <div style="position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:.5rem;color:#fbbf2480">ش</div>
-    <div style="position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:.5rem;color:#fbbf2450">ج</div>
-    <div style="position:absolute;left:2px;top:50%;transform:translateY(-50%);font-size:.5rem;color:#fbbf2450">غ</div>
-    <div style="position:absolute;right:2px;top:50%;transform:translateY(-50%);font-size:.5rem;color:#fbbf2450">ش.ر</div>
+  <!-- COL 5: Live Data + Specs -->
+  <div class="dp-col" id="col-specs">
+    <div class="dp-title dp-title-sp">بيانات مباشرة</div>
+    <div class="live-r"><span class="live-k">Mach</span><span class="live-v" id="st-mach">--</span></div>
+    <div class="live-r"><span class="live-k">G-Load</span><span class="live-v" id="st-g">--</span></div>
+    <div class="live-r"><span class="live-k">ارتفاع</span><span class="live-v" id="st-y">--</span></div>
+    <div class="live-r"><span class="live-k">مرحلة</span><span class="live-v" id="st-phase">--</span></div>
+    <div style="margin-top:6px;border-top:1px solid #00aaff10;padding-top:5px">
+    <div class="dp-title dp-title-sp" style="margin-bottom:3px">فيزياء PAC-3 CRI</div>
+    <div class="pp-r"><span class="pp-k">CP</span><span class="pp-v">3.83م</span></div>
+    <div class="pp-r"><span class="pp-k">CG إطلاق</span><span class="pp-v">2.23م</span></div>
+    <div class="pp-r"><span class="pp-k">استقرار</span><span class="pp-v">6.4 cal</span></div>
+    <div class="pp-r"><span class="pp-k">دفع أقصى</span><span class="pp-v">150kN</span></div>
+    <div class="pp-r"><span class="pp-k">T/W</span><span class="pp-v">24G</span></div>
+    <div class="pp-r"><span class="pp-k">مناورة</span><span class="pp-v2">40G</span></div>
+    </div>
   </div>
-  <div style="font-size:.6rem;color:#fbbf2470;margin-bottom:4px">من (درجة):</div>
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-    <input id="sec-from" type="range" min="0" max="360" value="45" style="flex:1;accent-color:#fbbf24" oninput="updateSector()">
-    <span id="sec-from-val" style="color:#fbbf24;font-size:.65rem;min-width:28px">45°</span>
-  </div>
-  <div style="font-size:.6rem;color:#fbbf2470;margin-bottom:4px">إلى (درجة):</div>
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-    <input id="sec-to" type="range" min="0" max="360" value="315" style="flex:1;accent-color:#fbbf24" oninput="updateSector()">
-    <span id="sec-to-val" style="color:#fbbf24;font-size:.65rem;min-width:28px">315°</span>
-  </div>
-  <div style="text-align:center;font-size:.62rem;color:#ff6060" id="sec-label">شرق → شمال → غرب</div>
-  <div style="text-align:center;font-size:.55rem;color:#fbbf2450;margin-top:3px" id="sec-deg">180°</div>
+
 </div>
+
+<!-- Launch button row fixed at bottom of data panel -->
+<div id="launch-row">
+  <button id="lbtn" onclick="launchPAC3()">🚀 أطلق PAC-3</button>
+  <span id="lstatus">جاهز</span>
+</div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -262,19 +356,19 @@ function simMach(v_sim, h_sim) {
 // ═══════════════════════════════════════════════════════
 // THREE.JS SETUP
 // ═══════════════════════════════════════════════════════
-var W=window.innerWidth, H=window.innerHeight;
+var gs=document.getElementById('game-screen');
+var W=gs.clientWidth, H=gs.clientHeight;
 var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('cv'),antialias:true});
 renderer.setSize(W,H);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-
 var scene=new THREE.Scene();
-// Moonlit desert night sky — deep blue-grey with hint of navy
-scene.background=new THREE.Color(0x080c18);
-scene.fog=new THREE.FogExp2(0x090d16,0.00016);
-
 var camera=new THREE.PerspectiveCamera(60,W/H,0.5,12000);
 camera.position.set(0,30,280);
 camera.lookAt(0,80,0);
+
+// Moonlit desert night sky — deep blue-grey with hint of navy
+scene.background=new THREE.Color(0x080c18);
+scene.fog=new THREE.FogExp2(0x090d16,0.00016);
 
 // Moonlight
 scene.add(new THREE.AmbientLight(0x1c2030,1.6));
@@ -992,18 +1086,15 @@ function update6DOF(m){
 var hudT=0;
 function updateHUD(){
   var ref=focused&&focused.alive?focused:null;
-  document.getElementById('st-x').textContent=ref?ref.pos.x.toFixed(0):'--';
-  document.getElementById('st-y').textContent=ref?ref.pos.y.toFixed(0):'--';
-  document.getElementById('st-z').textContent=ref?ref.pos.z.toFixed(0):'--';
+  document.getElementById('st-y').textContent=ref?ref.pos.y.toFixed(0)+' م':'--';
   var mEl=document.getElementById('st-mach');
-  mEl.textContent=ref?ref.machNum.toFixed(2):'--';
-  mEl.className=ref&&ref.machNum>3?'sv-hot':'sv';
+  mEl.textContent=ref?'M'+ref.machNum.toFixed(2):'--';
+  mEl.className=ref&&ref.machNum>3?'live-v live-hot':'live-v';
   var gEl=document.getElementById('st-g');
   gEl.textContent=ref?ref.gLoad.toFixed(1)+'G':'--';
-  gEl.className=ref&&ref.gLoad>30?'sv-hot':'sv';
+  gEl.className=ref&&ref.gLoad>30?'live-v live-hot':'live-v';
   var phaseAr={'boost':'دفع🔥','midcourse':'مسار→','terminal':'اعتراض🎯','ascending':'صاعد⬆'};
   document.getElementById('st-phase').textContent=ref&&phaseAr[ref.state]?phaseAr[ref.state]:'--';
-  document.getElementById('st-ready').textContent=totalMissiles-usedMissiles;
   // Round
   var tot=scoreD+scoreA;
   if(tot>0&&tot%4===0){var nr=Math.floor(tot/4)+1;if(nr>round){round=nr;spawnI=Math.max(6,14-round);}}
@@ -1069,11 +1160,12 @@ function updateCamera(){
 // ═══════════════════════════════════════════════════════
 var alertTO;
 function showAlert(msg){var el=document.getElementById('alertbox');el.textContent=msg;el.style.display='block';clearTimeout(alertTO);alertTO=setTimeout(function(){el.style.display='none';},2800);}
-var toastTO,toastEl;
+var toastTO;
 function toast(msg){
-  if(!toastEl){toastEl=document.createElement('div');toastEl.style.cssText='position:fixed;bottom:172px;left:50%;transform:translateX(-50%);background:rgba(0,5,20,.97);border:1px solid #00aaff;color:#00aaff;padding:6px 14px;border-radius:6px;font-family:monospace;font-size:.66rem;z-index:100;letter-spacing:1px;white-space:nowrap;pointer-events:none;transition:opacity .4s';document.body.appendChild(toastEl);}
-  toastEl.textContent=msg;toastEl.style.opacity='1';
-  clearTimeout(toastTO);toastTO=setTimeout(function(){toastEl.style.opacity='0';},3200);
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.style.opacity='1';
+  clearTimeout(toastTO);
+  toastTO=setTimeout(function(){el.style.opacity='0';},3200);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1092,8 +1184,10 @@ function animate(ts){
 }
 animate(0);
 window.addEventListener('resize',function(){
-  var w=window.innerWidth,h=window.innerHeight;
-  camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);
+  var gs=document.getElementById('game-screen');
+  var w=gs.clientWidth, h=gs.clientHeight;
+  camera.aspect=w/h; camera.updateProjectionMatrix();
+  renderer.setSize(w,h);
 });
 </script>
 </body>
