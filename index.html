@@ -2,1193 +2,1212 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>PAC-3 CRI — محاكاة</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PAC-3 CRI</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000308;overflow:hidden;font-family:'Courier New',monospace;color:#00ff88;user-select:none;display:flex;flex-direction:column;height:100vh}
-
-/* ── TOP: GAME SCREEN ── */
-#game-screen{
-  position:relative;
-  flex:1 1 0;
-  min-height:0;
-  overflow:hidden;
-}
-#cv{display:block;width:100%;height:100%}
-
-/* Radar — only overlay on game screen, bottom-left */
-#radar-wrap{position:absolute;bottom:10px;left:10px;z-index:10}
-#radar{width:130px;height:130px;border-radius:50%;background:rgba(0,5,15,0.88);border:1px solid #00aaff30;position:relative;overflow:hidden}
-#radar::after{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50%50%,transparent 0,transparent 30px,#00aaff0d 31px,transparent 32px,transparent 62px,#00aaff0d 63px,transparent 64px)}
-#rsweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(0,170,255,.4) 0deg,transparent 60deg);transform-origin:center;animation:sw 3s linear infinite}
-@keyframes sw{to{transform:rotate(360deg)}}
-#rlines{position:absolute;inset:0}
-#rlines::before,#rlines::after{content:'';position:absolute;background:#00aaff12}
-#rlines::before{width:1px;height:100%;left:50%}
-#rlines::after{width:100%;height:1px;top:50%}
-.blip{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
-.be{width:6px;height:6px;background:#ff4444;box-shadow:0 0 7px #ff4444}
-.bp{width:5px;height:5px;background:#00aaff;box-shadow:0 0 5px #00aaff}
-.bh{width:7px;height:7px;background:#00ff88;box-shadow:0 0 8px #00ff88;left:50%!important;top:50%!important}
-#rlabel{font-size:.48rem;color:#00aaff40;text-align:center;margin-top:2px;letter-spacing:2px}
-
-/* Score — top center of game screen */
-#scorebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,5,15,0.85);border:1px solid #00aaff20;border-radius:99px;padding:5px 18px;display:flex;gap:14px;font-size:.7rem;white-space:nowrap;z-index:10}
-.scd{color:#00ff88}.sca{color:#ff4444}.scr{color:#fbbf24}.scs{color:#ffffff15}
-
-/* Alert overlay */
-#alertbox{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(18,0,0,.97);border:2px solid #ff4444;border-radius:10px;padding:10px 22px;color:#ff4444;font-size:.78rem;letter-spacing:2px;display:none;text-align:center;z-index:50}
-
-/* ── BOTTOM: DATA PANEL ── */
-#data-panel{
-  height:220px;
-  flex-shrink:0;
-  background:#00040e;
-  border-top:1px solid #00aaff18;
-  display:grid;
-  grid-template-columns: 170px 1fr 160px 160px 175px;
-  gap:0;
-  overflow:hidden;
-}
-.dp-col{
-  border-left:1px solid #00aaff10;
-  padding:8px 10px;
-  overflow:hidden;
+body{
+  background:#05080f;
+  font-family:'Courier New',monospace;
+  color:#00ff88;
+  user-select:none;
   display:flex;
   flex-direction:column;
-  gap:4px;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
 }
-.dp-col:first-child{border-left:none}
-.dp-title{font-size:.5rem;letter-spacing:2px;color:#00aaff40;margin-bottom:3px;text-transform:uppercase}
 
-/* Sector col */
-#col-sector{background:#0a0800}
-.dp-title-warn{color:#fbbf2440}
-#compass-wrap{position:relative;width:90px;height:90px;margin:0 auto 4px;border-radius:50%;border:1px solid #fbbf2425;background:rgba(0,3,10,0.8)}
-#compass-cv{position:absolute;inset:0}
-.cdir{position:absolute;font-size:.45rem;color:#fbbf2470}
-.sec-input-row{display:flex;align-items:center;gap:4px;font-size:.55rem}
-.sec-input-row input{flex:1;accent-color:#fbbf24;height:14px}
-.sec-val{color:#fbbf24;min-width:28px;font-size:.58rem}
-.sec-lbl{color:#ff6060;font-size:.55rem;text-align:center;margin-top:2px}
+/* ══ GAME SCREEN (top) ══ */
+#game{
+  flex:1 1 0;
+  min-height:0;
+  position:relative;
+  overflow:hidden;
+}
+canvas{display:block;width:100%;height:100%}
 
-/* Threats col */
-#col-threats{background:#08000a}
-.dp-title-thr{color:#ff444440}
-.titem{display:flex;gap:4px;border-bottom:1px solid #ff333312;padding:2px 0;align-items:center;font-size:.58rem}
-.t-id{color:#ff6060;width:22px}.t-d{color:#ff9900;width:40px}.t-spd{color:#ffcc00;width:48px}.t-pat{color:#ff505055;font-size:.52rem;flex:1}.t-lk{font-size:.55rem;color:#00aaff}
+/* Radar overlay */
+#radar-wrap{position:absolute;bottom:8px;left:8px;z-index:10}
+#radar-cv{border-radius:50%;border:1px solid #00aaff30;background:rgba(0,4,12,.92);display:block}
+#rlabel{font-size:.44rem;color:#00aaff40;text-align:center;margin-top:2px;letter-spacing:2px}
 
-/* PAC-3 missiles col */
-#col-missiles{background:#000810}
-.dp-title-mis{color:#00aaff40}
-.ami{display:flex;justify-content:space-between;gap:4px;padding:2px 0;border-bottom:1px solid #00aaff10;font-size:.58rem}
-.am-id{color:#00aaff}.am-t{color:#ff505065;font-size:.52rem}.am-d{color:#00ff8870}.am-s{font-size:.52rem;color:#fbbf24}
-/* missile dots */
-#dcbar{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
-.dcd{width:8px;height:8px;border-radius:50%;background:#00aaff;box-shadow:0 0 5px #00aaff;transition:all .3s}
-.dcd.used{background:#00aaff15;box-shadow:none}
+/* Score bar */
+#scorebar{
+  position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  background:rgba(0,4,12,.9);border:1px solid #00aaff20;border-radius:99px;
+  padding:4px 16px;display:flex;gap:12px;font-size:.68rem;white-space:nowrap;z-index:10
+}
+.sc-d{color:#00ff88}.sc-a{color:#ff4444}.sc-r{color:#fbbf24}.sc-s{color:#ffffff10}
 
-/* 6DOF col */
-#col-dof{background:#000508}
-.dp-title-dof{color:#00aaff40}
-.dr{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.dl{font-size:.5rem;color:#00aaff60;width:22px;text-align:center}
-.dbw{flex:1;height:4px;background:rgba(0,170,255,.08);border-radius:2px;overflow:hidden;position:relative}
-.db{height:100%;border-radius:2px}
-.dcc{position:absolute;left:50%;top:0;width:1px;height:100%;background:#00aaff20}
-.dv{font-size:.5rem;color:#00aaff;width:26px;text-align:right}
-.ax-x .db{background:#ff7070}.ax-y .db{background:#70ff88}.ax-z .db{background:#7070ff}
-.ax-r .db{background:#ff70ff}.ax-p .db{background:#ffff70}.ax-w .db{background:#70ffff}
+/* Alert */
+#alertbox{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(15,0,0,.97);border:2px solid #ff4444;border-radius:8px;
+  padding:8px 20px;color:#ff4444;font-size:.75rem;letter-spacing:2px;
+  display:none;text-align:center;z-index:50
+}
+/* Toast */
+#toast{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  background:rgba(0,4,14,.97);border:1px solid #00aaff50;color:#00aaff;
+  padding:4px 12px;border-radius:5px;font-size:.58rem;z-index:100;
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .35s;
+  max-width:90vw;overflow:hidden;text-overflow:ellipsis
+}
 
-/* PAC-3 specs col */
-#col-specs{background:#000308}
-.dp-title-sp{color:#00aaff40}
-.pp-r{display:flex;justify-content:space-between;gap:4px;font-size:.58rem;padding:1px 0}
-.pp-k{color:#00aaff40}.pp-v{color:#00ff88;font-weight:bold}.pp-v2{color:#fbbf24;font-weight:bold}
-/* Mach / phase / G readout */
-.live-r{display:flex;justify-content:space-between;gap:4px;font-size:.62rem;padding:2px 0;border-bottom:1px solid #00aaff10}
-.live-k{color:#00aaff50}.live-v{color:#00aaff;font-weight:bold}.live-hot{color:#ff9900;font-weight:bold}
-
-/* Launch button row — inside bottom panel, stretched */
-#launch-row{
-  position:absolute;
-  bottom:0;left:0;right:0;
-  height:44px;
-  background:#00040e;
-  border-top:1px solid #00aaff12;
+/* ══ DATA PANEL (bottom) ══ */
+#panel{
+  height:210px;
+  flex-shrink:0;
+  background:#02040a;
+  border-top:1px solid #00aaff15;
+  display:grid;
+  grid-template-columns:160px 1fr 145px 145px 155px;
+  overflow:hidden;
+}
+.col{
+  border-left:1px solid #00aaff0c;
+  padding:6px 8px;
   display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
-  z-index:5;
+  flex-direction:column;
+  gap:3px;
+  overflow:hidden;
+  min-height:0;
 }
-#lbtn{background:rgba(0,5,20,0.97);border:2px solid #00aaff;color:#00aaff;padding:8px 32px;border-radius:8px;font-family:monospace;font-size:.82rem;cursor:pointer;letter-spacing:2px;transition:all .15s;-webkit-tap-highlight-color:transparent}
-#lbtn:active{transform:scale(.93);background:rgba(0,170,255,.12)}
-#lbtn:disabled{opacity:.2;border-color:#00aaff25;cursor:not-allowed}
-#lstatus{font-size:.6rem;color:#00aaff50;letter-spacing:1px}
+.col:first-child{border-left:none}
+.col-title{font-size:.46rem;letter-spacing:2px;color:#00aaff35;margin-bottom:2px;text-transform:uppercase}
 
-/* toast */
-#toast{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);background:rgba(0,5,20,.97);border:1px solid #00aaff;color:#00aaff;padding:5px 12px;border-radius:6px;font-size:.62rem;z-index:100;letter-spacing:1px;white-space:nowrap;pointer-events:none;transition:opacity .4s;opacity:0}
+/* ── Col 1: Tactical coords ── */
+#col-map{background:#030612}
+.coord-row{display:flex;align-items:center;gap:3px;padding:1px 0;border-bottom:1px solid #ffffff08;font-size:.5rem}
+.cr-id{min-width:30px;font-weight:bold}
+.cr-nm{min-width:28px;opacity:.7}
+.cr-pos{flex:1;font-size:.44rem;opacity:.55;text-align:left;direction:ltr}
+.base-hp-row{display:flex;justify-content:space-between;font-size:.5rem;padding:1px 0}
+.hp-track{height:3px;background:#ffffff10;border-radius:2px;margin:1px 0 3px}
+.hp-fill{height:100%;border-radius:2px;transition:width .6s,background .6s}
+
+/* ── Col 2: Threats ── */
+#col-thr{background:#060008}
+.thr-row{display:flex;align-items:center;gap:3px;padding:2px 0;border-bottom:1px solid #ff333310;font-size:.54rem}
+.tr-id{color:#ff6060;min-width:24px}
+.tr-src{color:#ff9900;min-width:28px;font-size:.46rem}
+.tr-eta{color:#ffcc00;min-width:36px}
+.tr-zone{min-width:30px;font-size:.46rem;text-align:center}
+.tr-tgt{color:#ff505060;font-size:.44rem;flex:1}
+.tr-lk{color:#00aaff;font-size:.5rem}
+.zone-pac{color:#ff2222;font-weight:bold}
+.zone-ewr{color:#00aaff}
+.zone-out{color:#ffffff15}
+
+/* ── Col 3: Missiles ── */
+#col-mis{background:#000610}
+.mis-row{display:flex;justify-content:space-between;gap:3px;padding:2px 0;border-bottom:1px solid #00aaff0d;font-size:.5rem}
+.mr-id{color:#00aaff}.mr-tgt{color:#ff505060;font-size:.46rem}.mr-eta{color:#00ff8870}.mr-st{font-size:.46rem;color:#fbbf24}
+#dcbar{display:flex;gap:3px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.dot{width:7px;height:7px;border-radius:50%;background:#00aaff;box-shadow:0 0 4px #00aaff;transition:.3s}
+.dot.used{background:#00aaff12;box-shadow:none}
+
+/* ── Col 4: 6DOF ── */
+#col-dof{background:#000508}
+.dof-row{display:flex;align-items:center;gap:4px;margin-bottom:2px}
+.dof-l{font-size:.46rem;color:#00aaff50;width:20px;text-align:center}
+.dof-bar{flex:1;height:4px;background:#00aaff0a;border-radius:2px;overflow:hidden;position:relative}
+.dof-fill{height:100%;border-radius:2px}
+.dof-mid{position:absolute;left:50%;top:0;width:1px;height:100%;background:#00aaff20}
+.dof-v{font-size:.46rem;color:#00aaff;width:24px;text-align:right}
+.df-vx{background:#ff7070}.df-vy{background:#70ff88}.df-vz{background:#7070ff}
+.df-ro{background:#ff70ff}.df-pi{background:#ffff70}.df-ya{background:#70ffff}
+
+/* ── Col 5: Live data ── */
+#col-live{background:#000308}
+.live-row{display:flex;justify-content:space-between;font-size:.56rem;padding:2px 0;border-bottom:1px solid #00aaff0d}
+.lk{color:#00aaff40}.lv{color:#00aaff;font-weight:bold}.lv-hot{color:#ff9900;font-weight:bold}
+.spec-row{display:flex;justify-content:space-between;gap:3px;font-size:.5rem;padding:1px 0}
+.sk{color:#00aaff30}.sv{color:#00ff88;font-weight:bold}.sv2{color:#fbbf24;font-weight:bold}
+
+/* ══ LAUNCH BUTTON ══ */
+#launch-bar{
+  flex-shrink:0;height:38px;
+  background:#02040a;border-top:1px solid #00aaff0f;
+  display:flex;align-items:center;justify-content:center;gap:14px
+}
+#lbtn{
+  background:rgba(0,4,18,.97);border:2px solid #00aaff;color:#00aaff;
+  padding:7px 28px;border-radius:7px;font-family:monospace;font-size:.8rem;
+  cursor:pointer;letter-spacing:2px;transition:.14s;-webkit-tap-highlight-color:transparent
+}
+#lbtn:active{transform:scale(.92);background:rgba(0,150,255,.1)}
+#lbtn:disabled{opacity:.2;border-color:#00aaff20;cursor:not-allowed}
+#lstatus{font-size:.56rem;color:#00aaff45;letter-spacing:1px;min-width:90px}
 </style>
 </head>
 <body>
 
-<!-- ══ TOP: GAME SCREEN ══ -->
-<div id="game-screen">
+<!-- GAME SCREEN -->
+<div id="game">
   <canvas id="cv"></canvas>
-  <!-- Radar only overlay -->
   <div id="radar-wrap">
-    <div id="radar"><div id="rlines"></div><div id="rsweep"></div><div class="blip bh"></div></div>
-    <div id="rlabel">AN/MPQ-65 ▸ RADAR</div>
+    <canvas id="radar-cv" width="120" height="120"></canvas>
+    <div id="rlabel">EWR·50km | PAC3·30km</div>
   </div>
-  <!-- Score -->
   <div id="scorebar">
-    <span class="scd">🛡 <strong id="sc-def">0</strong></span>
-    <span class="scs">|</span>
-    <span class="sca">☠ <strong id="sc-atk">0</strong></span>
-    <span class="scs">|</span>
-    <span class="scr">جولة <strong id="sc-round">1</strong></span>
+    <span class="sc-d">🛡 <b id="sc-def">0</b></span>
+    <span class="sc-s">|</span>
+    <span class="sc-a">☠ <b id="sc-atk">0</b></span>
+    <span class="sc-s">|</span>
+    <span class="sc-r">جولة <b id="sc-rnd">1</b></span>
   </div>
   <div id="alertbox"></div>
   <div id="toast"></div>
 </div>
 
-<!-- ══ BOTTOM: DATA PANEL ══ -->
-<div id="data-panel">
+<!-- DATA PANEL -->
+<div id="panel">
 
-  <!-- COL 1: Sector Control -->
-  <div class="dp-col" id="col-sector">
-    <div class="dp-title dp-title-warn">قطاع التهديد</div>
-    <div id="compass-wrap">
-      <canvas id="compass-cv" width="90" height="90"></canvas>
-      <span class="cdir" style="top:2px;left:50%;transform:translateX(-50%)">ش</span>
-      <span class="cdir" style="bottom:2px;left:50%;transform:translateX(-50%)">ج</span>
-      <span class="cdir" style="left:2px;top:50%;transform:translateY(-50%)">غ</span>
-      <span class="cdir" style="right:2px;top:50%;transform:translateY(-50%)">ش.ر</span>
-    </div>
-    <div class="sec-input-row">
-      <span style="color:#fbbf2450;font-size:.5rem">من</span>
-      <input id="sec-from" type="range" min="0" max="360" value="45" oninput="updateSector()">
-      <span class="sec-val" id="sec-from-val">45°</span>
-    </div>
-    <div class="sec-input-row">
-      <span style="color:#fbbf2450;font-size:.5rem">إلى</span>
-      <input id="sec-to" type="range" min="0" max="360" value="315" oninput="updateSector()">
-      <span class="sec-val" id="sec-to-val">315°</span>
-    </div>
-    <div class="sec-lbl" id="sec-label">ش.ش.ر ← → ش.غ</div>
-    <div style="text-align:center;font-size:.5rem;color:#fbbf2440" id="sec-deg">270° قطاع</div>
+  <!-- COL 1: Tactical Map / Coords -->
+  <div class="col" id="col-map">
+    <div class="col-title">الخريطة التكتيكية</div>
+    <div style="font-size:.44rem;color:#00ff8850;margin-bottom:1px">◉ قواعدنا</div>
+    <div class="coord-row"><span class="cr-id" style="color:#00ff88">B-01</span><span class="cr-nm">PAC-3</span><span class="cr-pos">0.00E 0.00N km</span></div>
+    <div class="coord-row"><span class="cr-id" style="color:#00aaff">B-02</span><span class="cr-nm">EWR</span><span class="cr-pos">-1.04E -3.64N km</span></div>
+    <div class="coord-row"><span class="cr-id" style="color:#fbbf24">B-03</span><span class="cr-nm">وقود</span><span class="cr-pos">+3.12E -1.04N km</span></div>
+    <div style="font-size:.44rem;color:#ff444450;margin:3px 0 1px">◈ منصات العدو</div>
+    <div class="coord-row"><span class="cr-id" style="color:#ff5555">L-01</span><span class="cr-nm">030°</span><span class="cr-pos">346km +173E+300N</span></div>
+    <div class="coord-row"><span class="cr-id" style="color:#ff5555">L-02</span><span class="cr-nm">075°</span><span class="cr-pos">254km +245E+66N</span></div>
+    <div class="coord-row"><span class="cr-id" style="color:#ff5555">L-03</span><span class="cr-nm">130°</span><span class="cr-pos">291km +223E-187N</span></div>
+    <div class="coord-row"><span class="cr-id" style="color:#ff5555">L-04</span><span class="cr-nm">190°</span><span class="cr-pos">283km -49E-279N</span></div>
+    <div class="coord-row"><span class="cr-id" style="color:#ff5555">L-05</span><span class="cr-nm">240°</span><span class="cr-pos">360km -312E-180N</span></div>
+    <div class="coord-row"><span class="cr-id" style="color:#ff5555">L-06</span><span class="cr-nm">310°</span><span class="cr-pos">352km -269E+226N</span></div>
+    <div style="font-size:.44rem;color:#ffffff25;margin:3px 0 1px">▣ حالة القواعد</div>
+    <div id="base-hp"></div>
   </div>
 
   <!-- COL 2: Threats -->
-  <div class="dp-col" id="col-threats">
-    <div class="dp-title dp-title-thr">▼ تهديدات مرصودة</div>
-    <div id="tlist"></div>
+  <div class="col" id="col-thr">
+    <div class="col-title">▼ تهديدات مرصودة</div>
+    <div id="tlist"><span style="color:#ff444430;font-size:.5rem">لا يوجد تهديد</span></div>
   </div>
 
-  <!-- COL 3: PAC-3 Missiles -->
-  <div class="dp-col" id="col-missiles">
-    <div class="dp-title dp-title-mis">▶ PAC-3 في الجو</div>
-    <div id="amlist"></div>
-    <div style="margin-top:auto;padding-top:4px">
-      <div class="dp-title dp-title-mis" style="margin-bottom:3px">مخزون الصواريخ</div>
+  <!-- COL 3: Missiles in flight -->
+  <div class="col" id="col-mis">
+    <div class="col-title">▶ PAC-3 في الجو</div>
+    <div id="mlist"><span style="color:#00aaff15;font-size:.5rem">لا يوجد</span></div>
+    <div style="margin-top:auto">
+      <div class="col-title" style="margin-bottom:2px">مخزون</div>
       <div id="dcbar"></div>
     </div>
   </div>
 
   <!-- COL 4: 6DOF -->
-  <div class="dp-col" id="col-dof">
-    <div class="dp-title dp-title-dof">6DOF — PAC-3 نشط</div>
-    <div class="dr ax-x"><span class="dl">Vx</span><div class="dbw"><div class="db" id="dof-x"></div><div class="dcc"></div></div><span class="dv" id="dv-x">0</span></div>
-    <div class="dr ax-y"><span class="dl">Vy</span><div class="dbw"><div class="db" id="dof-y"></div><div class="dcc"></div></div><span class="dv" id="dv-y">0</span></div>
-    <div class="dr ax-z"><span class="dl">Vz</span><div class="dbw"><div class="db" id="dof-z"></div><div class="dcc"></div></div><span class="dv" id="dv-z">0</span></div>
-    <div class="dr ax-r"><span class="dl">Roll</span><div class="dbw"><div class="db" id="dof-r"></div><div class="dcc"></div></div><span class="dv" id="dv-r">0</span></div>
-    <div class="dr ax-p"><span class="dl">Pit</span><div class="dbw"><div class="db" id="dof-p"></div><div class="dcc"></div></div><span class="dv" id="dv-p">0</span></div>
-    <div class="dr ax-w"><span class="dl">Yaw</span><div class="dbw"><div class="db" id="dof-w"></div><div class="dcc"></div></div><span class="dv" id="dv-w">0</span></div>
+  <div class="col" id="col-dof">
+    <div class="col-title">6DOF نشط</div>
+    <div class="dof-row"><span class="dof-l">Vx</span><div class="dof-bar"><div class="dof-fill df-vx" id="d-vx"></div><div class="dof-mid"></div></div><span class="dof-v" id="v-vx">0</span></div>
+    <div class="dof-row"><span class="dof-l">Vy</span><div class="dof-bar"><div class="dof-fill df-vy" id="d-vy"></div><div class="dof-mid"></div></div><span class="dof-v" id="v-vy">0</span></div>
+    <div class="dof-row"><span class="dof-l">Vz</span><div class="dof-bar"><div class="dof-fill df-vz" id="d-vz"></div><div class="dof-mid"></div></div><span class="dof-v" id="v-vz">0</span></div>
+    <div class="dof-row"><span class="dof-l">Rol</span><div class="dof-bar"><div class="dof-fill df-ro" id="d-ro"></div><div class="dof-mid"></div></div><span class="dof-v" id="v-ro">0</span></div>
+    <div class="dof-row"><span class="dof-l">Pit</span><div class="dof-bar"><div class="dof-fill df-pi" id="d-pi"></div><div class="dof-mid"></div></div><span class="dof-v" id="v-pi">0</span></div>
+    <div class="dof-row"><span class="dof-l">Yaw</span><div class="dof-bar"><div class="dof-fill df-ya" id="d-ya"></div><div class="dof-mid"></div></div><span class="dof-v" id="v-ya">0</span></div>
   </div>
 
-  <!-- COL 5: Live Data + Specs -->
-  <div class="dp-col" id="col-specs">
-    <div class="dp-title dp-title-sp">بيانات مباشرة</div>
-    <div class="live-r"><span class="live-k">Mach</span><span class="live-v" id="st-mach">--</span></div>
-    <div class="live-r"><span class="live-k">G-Load</span><span class="live-v" id="st-g">--</span></div>
-    <div class="live-r"><span class="live-k">ارتفاع</span><span class="live-v" id="st-y">--</span></div>
-    <div class="live-r"><span class="live-k">مرحلة</span><span class="live-v" id="st-phase">--</span></div>
-    <div style="margin-top:6px;border-top:1px solid #00aaff10;padding-top:5px">
-    <div class="dp-title dp-title-sp" style="margin-bottom:3px">فيزياء PAC-3 CRI</div>
-    <div class="pp-r"><span class="pp-k">CP</span><span class="pp-v">3.83م</span></div>
-    <div class="pp-r"><span class="pp-k">CG إطلاق</span><span class="pp-v">2.23م</span></div>
-    <div class="pp-r"><span class="pp-k">استقرار</span><span class="pp-v">6.4 cal</span></div>
-    <div class="pp-r"><span class="pp-k">دفع أقصى</span><span class="pp-v">150kN</span></div>
-    <div class="pp-r"><span class="pp-k">T/W</span><span class="pp-v">24G</span></div>
-    <div class="pp-r"><span class="pp-k">مناورة</span><span class="pp-v2">40G</span></div>
+  <!-- COL 5: Live data -->
+  <div class="col" id="col-live">
+    <div class="col-title">بيانات مباشرة</div>
+    <div class="live-row"><span class="lk">Mach</span><span class="lv" id="l-mach">--</span></div>
+    <div class="live-row"><span class="lk">G-Load</span><span class="lv" id="l-g">--</span></div>
+    <div class="live-row"><span class="lk">ارتفاع</span><span class="lv" id="l-alt">--</span></div>
+    <div class="live-row"><span class="lk">مرحلة</span><span class="lv" id="l-phase">--</span></div>
+    <div style="margin-top:5px;border-top:1px solid #00aaff0d;padding-top:4px">
+      <div class="col-title" style="margin-bottom:2px">PAC-3 CRI</div>
+      <div class="spec-row"><span class="sk">CP</span><span class="sv">3.83م</span></div>
+      <div class="spec-row"><span class="sk">CG</span><span class="sv">2.23م</span></div>
+      <div class="spec-row"><span class="sk">Stab</span><span class="sv">6.4cal</span></div>
+      <div class="spec-row"><span class="sk">Thrust</span><span class="sv">150kN</span></div>
+      <div class="spec-row"><span class="sk">T/W</span><span class="sv">24G</span></div>
+      <div class="spec-row"><span class="sk">MaxG</span><span class="sv2">40G</span></div>
     </div>
   </div>
 
 </div>
 
-<!-- Launch button row fixed at bottom of data panel -->
-<div id="launch-row">
-  <button id="lbtn" onclick="launchPAC3()">🚀 أطلق PAC-3</button>
+<!-- LAUNCH -->
+<div id="launch-bar">
+  <button id="lbtn" onclick="launch()">🚀 أطلق PAC-3</button>
   <span id="lstatus">جاهز</span>
 </div>
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════
-// PHYSICAL CONSTANTS (from calculations)
-// ═══════════════════════════════════════════════════════
-var PHYSICS = {
-  // Real PAC-3 CRI specs
-  mass_launch:  318,      // kg
-  mass_burnout: 148,      // kg  (structure only after 170kg prop burned)
-  mass_prop:    170,      // kg
-  burn_time:    6.0,      // seconds estimated
-  thrust_peak:  150000,   // N (2x average)
-  thrust_avg:   75000,    // N
-  Isp:          270,      // s solid rocket
-  
-  // Geometry
-  L:    5.00,   // m length
-  D:    0.25,   // m diameter
-  S_ref: 0.049, // m² reference area
-  
-  // Aerodynamics (calculated)
-  x_cp:      3.83,  // m from nose (Barrowman)
-  x_cg_init: 2.23,  // m from nose at launch
-  x_cg_burn: 1.80,  // m from nose at burnout
-  stab_cal:  6.41,  // calibers stability margin
-  
-  // CD vs Mach (lookup table)
-  CD_mach:  [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0],
-  CD_vals:  [0.15, 0.35, 0.85, 0.60, 0.45, 0.32, 0.27, 0.24, 0.22],
-  
-  // Max G maneuver
-  max_G:    40,     // G
-  
-  // FOV
-  fov_half_cos: Math.cos(60 * Math.PI/180),  // 120° total = 60° half
-  
-  // Safe ascend time after losing lock
-  ascend_sec: 3.0,
-  
-  // Gravity
-  g: 9.81,
-  
-  // Simulation scale: 1 sim unit = 13 real meters
-  // Chosen so battery range ~20km → ~1500 sim units (visible)
-  sim_scale: 13.0,  // real meters per sim unit
-};
+'use strict';
+// ════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════
+var G   = 9.81;          // gravity sim units/s²
+var SM  = 26;            // sim units per Mach (Mach1 = 26 u/s)
+var MAX_MISSILES = 5;
 
-// Atmosphere model: rho = rho0 * exp(-h/H)
-function airDensity(h_sim) {
-  var h_real = h_sim * PHYSICS.sim_scale;
-  var rho0 = 1.225; // kg/m³ at sea level
-  var H = 8500;     // scale height m
-  return rho0 * Math.exp(-h_real / H);
-}
+// Radar ranges (sim units): 1 sim unit = 13m real
+var R_EWR  = 3846;   // 50 km
+var R_PAC3 = 2308;   // 30 km
+var R_RADAR = R_EWR; // display range
 
-// Speed of sound vs altitude
-function speedOfSound(h_sim) {
-  var h_real = h_sim * PHYSICS.sim_scale;
-  // ISA: T = 288.15 - 6.5*h/1000 (up to 11km), then 216.65K
-  var T = h_real < 11000 ? 288.15 - 0.0065*h_real : 216.65;
-  return Math.sqrt(1.4 * 287 * T);
-}
+function mach(v){ return v/SM; }
+function toSim(real_ms){ return real_ms/340*SM; }
 
-// CD interpolation
-function getCd(mach) {
-  var tbl_m = PHYSICS.CD_mach;
-  var tbl_c = PHYSICS.CD_vals;
-  if (mach <= tbl_m[0]) return tbl_c[0];
-  if (mach >= tbl_m[tbl_m.length-1]) return tbl_c[tbl_c.length-1];
-  for (var i=0; i<tbl_m.length-1; i++) {
-    if (mach >= tbl_m[i] && mach <= tbl_m[i+1]) {
-      var t = (mach-tbl_m[i])/(tbl_m[i+1]-tbl_m[i]);
-      return tbl_c[i]*(1-t) + tbl_c[i+1]*t;
-    }
-  }
-  return 0.3;
-}
+// ════════════════════════════════════════════════
+// BASES & LAUNCHERS
+// ════════════════════════════════════════════════
+var BASE_DEFS = [
+  {id:'B-01', name:'PAC-3', sx:0,   sz:0,    hp:100, color:0x00ff88},
+  {id:'B-02', name:'EWR',   sx:-80, sz:-280, hp:100, color:0x00aaff},
+  {id:'B-03', name:'وقود',  sx:240, sz:-80,  hp:100, color:0xfbbf24},
+];
+var LAUNCHERS = [
+  {id:'L-01', bearing:330, km:280, sx: -10769, sz: -18652},
+  {id:'L-02', bearing:345, km:320, sx:  -6370, sz: -23776},
+  {id:'L-03', bearing:355, km:260, sx:  -1743, sz: -19923},
+  {id:'L-04', bearing:  5, km:300, sx:   2011, sz: -22989},
+  {id:'L-05', bearing: 20, km:290, sx:   7629, sz: -20962},
+  {id:'L-06', bearing: 38, km:310, sx:  14681, sz: -18791},
+];
 
-// Current mass during burn
-function getMass(burnFrac) {
-  // burnFrac = 0 (just launched) to 1 (burnout)
-  return PHYSICS.mass_launch - PHYSICS.mass_prop * burnFrac;
-}
-
-// Current thrust during burn phases
-function getThrust(t_since_launch) {
-  if (t_since_launch < 0) return 0;
-  // Phase 1: BOOST (0-0.8s): peak thrust ramps up fast
-  if (t_since_launch < 0.8) return PHYSICS.thrust_peak * (t_since_launch/0.8);
-  // Phase 2: SUSTAIN (0.8-5.8s): average thrust
-  if (t_since_launch < PHYSICS.burn_time) return PHYSICS.thrust_avg;
-  // Phase 3: COAST — no thrust
-  return 0;
-}
-
-// ═══════════════════════════════════════════════════════
-// SIMULATION — direct sim units, ratios preserved
-// 1 sim unit ≈ real scale, time runs at real speed
-// We just pick visible speeds directly, keep physics ratios
-// PAC-3 Mach5=130 sim/s, threat Mach3=78 sim/s, gravity=9.81 sim/s²
-// ═══════════════════════════════════════════════════════
-
-var SIM_MACH = 26;   // sim units/s per Mach number
-var PAC3_SIM_MAXSPEED = 5.0 * SIM_MACH;   // 130 sim u/s at Mach 5
-var SIM_GRAVITY = 9.81;                    // same as real (sim units = meters effectively)
-var SIM_THRUST_ACCEL = 23.1 * SIM_GRAVITY; // T/W=24 → 23G net at launch (real calc)
-var SIM_BURN_TIME = 6.0;                   // seconds
-
-function realToSimVel(v_real) { return (v_real / 340.0) * SIM_MACH; }
-function simToRealVel(v_sim)  { return (v_sim / SIM_MACH) * 340.0; }
-
-// Mach number from sim velocity and altitude
-function simMach(v_sim, h_sim) {
-  var a = speedOfSound(h_sim); // real m/s
-  var v_real = simToRealVel(v_sim);
-  return v_real / a;
-}
-
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // THREE.JS SETUP
-// ═══════════════════════════════════════════════════════
-var gs=document.getElementById('game-screen');
-var W=gs.clientWidth, H=gs.clientHeight;
-var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('cv'),antialias:true});
+// ════════════════════════════════════════════════
+var gs  = document.getElementById('game');
+var W   = gs.clientWidth, H = gs.clientHeight;
+var renderer = new THREE.WebGLRenderer({canvas:document.getElementById('cv'), antialias:true});
 renderer.setSize(W,H);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-var scene=new THREE.Scene();
-var camera=new THREE.PerspectiveCamera(60,W/H,0.5,12000);
-camera.position.set(0,30,280);
-camera.lookAt(0,80,0);
 
-// Moonlit desert night sky — deep blue-grey with hint of navy
-scene.background=new THREE.Color(0x080c18);
-scene.fog=new THREE.FogExp2(0x090d16,0.00016);
+var scene  = new THREE.Scene();
+scene.background = new THREE.Color(0x080c18);
+scene.fog = new THREE.FogExp2(0x090d16, 0.00014);
 
-// Moonlight
-scene.add(new THREE.AmbientLight(0x1c2030,1.6));
-var moonLight=new THREE.DirectionalLight(0xbfd4f0,0.5);
-moonLight.position.set(-500,900,300); scene.add(moonLight);
-var rimLight=new THREE.DirectionalLight(0x080c14,0.12);
-rimLight.position.set(300,100,-400); scene.add(rimLight);
+var camera = new THREE.PerspectiveCamera(60, W/H, 0.5, 14000);
+camera.position.set(0, 22, 180);
+camera.lookAt(0, 22, 0);
 
-// GROUND — moonlit desert hardpack sand
-var gm=new THREE.Mesh(new THREE.PlaneGeometry(8000,8000),new THREE.MeshLambertMaterial({color:0x3a2e1a}));
-gm.rotation.x=-Math.PI/2; scene.add(gm);
-scene.add(new THREE.GridHelper(6000,80,0x2e2415,0x241c10));
+// ── Lighting (dawn) ──
+scene.add(new THREE.AmbientLight(0x2a3550, 1.5));
+var dawnLight = new THREE.DirectionalLight(0xffa060, 0.65);
+dawnLight.position.set(800,80,600); scene.add(dawnLight);
+var skyLight = new THREE.DirectionalLight(0x4060a0, 0.3);
+skyLight.position.set(-200,900,0); scene.add(skyLight);
 
-// Flat rocky patches
-for(var ri=0;ri<18;ri++){
-  var rpatch=new THREE.Mesh(new THREE.BoxGeometry(30+Math.random()*120,0.4+Math.random()*1.5,30+Math.random()*120),new THREE.MeshLambertMaterial({color:0x2e2318}));
-  rpatch.position.set((Math.random()-.5)*1800,0.2,(Math.random()-.5)*1800); scene.add(rpatch);
+// ── Ground ──
+var gnd = new THREE.Mesh(
+  new THREE.PlaneGeometry(12000,12000),
+  new THREE.MeshLambertMaterial({color:0x8a7040})
+);
+gnd.rotation.x=-Math.PI/2; scene.add(gnd);
+scene.add(new THREE.GridHelper(8000,70,0x6a5530,0x5a4820));
+
+// Flat rocks
+var rockMat = new THREE.MeshLambertMaterial({color:0x7a6535});
+for(var ri=0;ri<22;ri++){
+  var rm=new THREE.Mesh(
+    new THREE.BoxGeometry(20+Math.random()*130, 0.3+Math.random()*1.2, 20+Math.random()*130),
+    rockMat
+  );
+  rm.position.set((Math.random()-.5)*2400, 0.2, (Math.random()-.5)*2400);
+  scene.add(rm);
 }
 
-// Stars — fewer, moonlit night
-var sv=[];
-for(var i=0;i<2500;i++) sv.push((Math.random()-.5)*8000,300+Math.random()*2000,(Math.random()-.5)*8000);
-var sg=new THREE.BufferGeometry();
-sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
-scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xdde8ff,size:1.0,transparent:true,opacity:0.22})));
+// Dawn horizon glow
+var hg=new THREE.Mesh(new THREE.PlaneGeometry(9000,500),
+  new THREE.MeshBasicMaterial({color:0xff5010,transparent:true,opacity:0.16,side:THREE.DoubleSide}));
+hg.rotation.y=0.4; hg.position.set(700,200,600); scene.add(hg);
 
-// MOON in sky
-var moonMesh=new THREE.Mesh(new THREE.SphereGeometry(28,16,12),new THREE.MeshBasicMaterial({color:0xe8eecc}));
-moonMesh.position.set(-900,700,400); scene.add(moonMesh);
-var moonGlow=new THREE.Mesh(new THREE.SphereGeometry(36,12,8),new THREE.MeshBasicMaterial({color:0xc8d890,transparent:true,opacity:0.07,side:THREE.BackSide}));
-moonGlow.position.copy(moonMesh.position); scene.add(moonGlow);
-// Moonlight ground reflection
-var moonRefl=new THREE.Mesh(new THREE.PlaneGeometry(700,700),new THREE.MeshBasicMaterial({color:0x4a3e28,transparent:true,opacity:0.15}));
-moonRefl.rotation.x=-Math.PI/2; moonRefl.position.set(-180,0.3,100); scene.add(moonRefl);
+// Stars (few — dawn)
+var sv=[]; for(var i=0;i<700;i++) sv.push((Math.random()-.5)*9000,400+Math.random()*1800,(Math.random()-.5)*9000);
+var sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:0.9,transparent:true,opacity:0.22})));
 
-// SCATTERED CLOUDS — flat puffs that catch moonlight
-// Mid-month moon = bright enough to illuminate clouds silver-grey
-var cloudMat1=new THREE.MeshLambertMaterial({color:0x3a4050,transparent:true,opacity:0.55}); // dark cloud
-var cloudMat2=new THREE.MeshLambertMaterial({color:0x6a7080,transparent:true,opacity:0.35}); // moonlit edge
-var cloudData=[
-  [-400,320,-200, 180,30,90, 0.55],
-  [300,280,100,   140,25,70, 0.45],
-  [-100,350,350,  220,35,110,0.6 ],
-  [500,300,-300,  160,28,80, 0.5 ],
-  [-600,260,50,   130,22,65, 0.4 ],
-  [100,310,-450,  190,32,95, 0.5 ],
-  [-250,340,480,  150,26,75, 0.45],
-];
-cloudData.forEach(function(d){
-  var cx=d[0],cy=d[1],cz=d[2], sw=d[3],sh=d[4],sd=d[5], op=d[6];
-  // Cloud body (dark base)
-  var cloud=new THREE.Mesh(
-    new THREE.SphereGeometry(1,7,5),
-    new THREE.MeshLambertMaterial({color:0x2a2f3a,transparent:true,opacity:op})
-  );
-  cloud.scale.set(sw,sh,sd);
-  cloud.position.set(cx,cy,cz); scene.add(cloud);
-  // Moonlit top edge (brighter silver)
-  var cloudTop=new THREE.Mesh(
-    new THREE.SphereGeometry(1,7,4),
-    new THREE.MeshLambertMaterial({color:0x8090a0,transparent:true,opacity:op*0.4})
-  );
-  cloudTop.scale.set(sw*0.85,sh*0.6,sd*0.85);
-  cloudTop.position.set(cx,cy+sh*0.35,cz); scene.add(cloudTop);
+// Dawn clouds
+var dawnClouds=[[-300,220,-150,200,28,100,0xff8040,0.22],[400,180,200,160,22,80,0xff6030,0.18],
+  [-100,260,320,240,30,120,0xffaa60,0.2],[550,200,-280,180,25,90,0xff7040,0.16],
+  [-500,240,80,150,20,75,0xffcc80,0.14],[100,290,-420,210,32,105,0xff9050,0.18]];
+dawnClouds.forEach(function(d){
+  var cm=new THREE.Mesh(new THREE.SphereGeometry(1,8,5),new THREE.MeshLambertMaterial({color:0x607090,transparent:true,opacity:d[7]+0.14}));
+  cm.scale.set(d[3],d[4],d[5]); cm.position.set(d[0],d[1],d[2]); scene.add(cm);
+  var cb=new THREE.Mesh(new THREE.SphereGeometry(1,8,4),new THREE.MeshBasicMaterial({color:d[6],transparent:true,opacity:d[7]}));
+  cb.scale.set(d[3]*.9,d[4]*.5,d[5]*.9); cb.position.set(d[0],d[1]-d[4]*.3,d[2]); scene.add(cb);
 });
 
-// ── PAC-3 BATTERY COMPLEX ──
+// ── MATERIALS ──
+var matSand  = new THREE.MeshLambertMaterial({color:0x4a3c24,emissive:0x080500});
+var matConc  = new THREE.MeshLambertMaterial({color:0x3d3220});
+var matSteel = new THREE.MeshLambertMaterial({color:0x1a2030,emissive:0x000a18});
+var matDark  = new THREE.MeshLambertMaterial({color:0x0d1a2a,emissive:0x001133});
+var matGreen = new THREE.MeshLambertMaterial({color:0x3a5028,emissive:0x081008});
+
+function B(w,h,d,mat,x,y,z,p){
+  var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y,z); p.add(m); return m;
+}
+function C(rt,rb,h,seg,mat,x,y,z,p){
+  var m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),mat); m.position.set(x,y,z); p.add(m); return m;
+}
+
+// ── BASE 1: EWR RADAR (-80, -280) ──
+var base1=new THREE.Group(); base1.position.set(-80,0,-280);
+B(70,1.2,70,matConc,0,.6,0,base1);
+B(20,8,12,matSand,-20,4,0,base1);
+C(.8,1.2,18,8,matSteel,10,9,0,base1);
+var ewrDish=new THREE.Mesh(new THREE.CylinderGeometry(8,8,.5,14,1,false,0,Math.PI),
+  new THREE.MeshLambertMaterial({color:0x2a3f50,emissive:0x001828}));
+ewrDish.position.set(10,19,0); ewrDish.rotation.z=Math.PI/2; base1.add(ewrDish);
+ewrDish.userData.rot=0.35;
+var ewrGlow=new THREE.Mesh(new THREE.PlaneGeometry(15,8),
+  new THREE.MeshBasicMaterial({color:0x00aaff,transparent:true,opacity:.1,side:THREE.DoubleSide}));
+ewrGlow.position.set(10,19,.5); base1.add(ewrGlow);
+B(6,4,8,matSand,-5,2,-20,base1);
+B(5,3,10,matSand,20,1.5,-15,base1);
+// 50km ring
+var r50=new THREE.Mesh(new THREE.RingGeometry(3844,3847,80),
+  new THREE.MeshBasicMaterial({color:0x00aaff,side:THREE.DoubleSide,transparent:true,opacity:.07}));
+r50.rotation.x=-Math.PI/2; r50.position.y=.4; base1.add(r50);
+scene.add(base1);
+
+// ── BASE 2: FUEL DEPOT (240, -80) ──
+var base2=new THREE.Group(); base2.position.set(240,0,-80);
+B(90,1.2,90,matConc,0,.6,0,base2);
+[[-20,0,-20],[-20,0,10],[10,0,-20],[10,0,10],[35,0,-5]].forEach(function(p){
+  C(7,7,18,12,matGreen,p[0],9,p[2],base2);
+  var td=new THREE.Mesh(new THREE.SphereGeometry(7,10,6,0,Math.PI*2,0,Math.PI/2),
+    new THREE.MeshLambertMaterial({color:0x2a4018}));
+  td.position.set(p[0],18,p[2]); base2.add(td);
+  var tr=new THREE.Mesh(new THREE.TorusGeometry(7.5,.3,4,14),
+    new THREE.MeshLambertMaterial({color:0x303030}));
+  tr.position.set(p[0],14,p[2]); tr.rotation.x=Math.PI/2; base2.add(tr);
+});
+B(14,7,10,matSand,-32,3.5,0,base2);
+C(2,2,5,8,new THREE.MeshLambertMaterial({color:0x909090}),-28,2.5,-22,base2);
+C(2,2,5,8,new THREE.MeshLambertMaterial({color:0x909090}),-22,2.5,-22,base2);
+scene.add(base2);
+
+// ── BASE 3: PAC-3 BATTERY (0,0) ──
 var battery=new THREE.Group();
-// Pad — sand-colored concrete
-battery.add(function(){var m=new THREE.Mesh(new THREE.BoxGeometry(50,1.5,50),new THREE.MeshLambertMaterial({color:0x3d3220}));m.position.y=0.75;return m;}());
-// 4 launcher containers — desert tan
+B(55,1.5,55,matConc,0,.75,0,battery);
 var lpos=[[-14,0,-14],[14,0,-14],[-14,0,14],[14,0,14]];
-lpos.forEach(function(p,i){
-  var box=new THREE.Mesh(new THREE.BoxGeometry(5,4,7),new THREE.MeshLambertMaterial({color:0x4a3c24,emissive:0x0a0800}));
-  box.position.set(p[0],3,p[2]); battery.add(box);
-  // 4 missile canisters per launcher (PAC-3 quad-packs)
+lpos.forEach(function(p){
+  B(5,4,7,matSand,p[0],3,p[2],battery);
   [[-1,0,-1],[1,0,-1],[-1,0,1],[1,0,1]].forEach(function(cp){
-    var can=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,4,6),new THREE.MeshLambertMaterial({color:0x3d3220}));
-    can.position.set(p[0]+cp[0]*1.1,5.5,p[2]+cp[2]*1.1); battery.add(can);
+    C(.45,.45,4,6,matConc,p[0]+cp[0]*1.1,5.5,p[2]+cp[2]*1.1,battery);
   });
 });
-// ECS truck (power/comms)
-var truck=new THREE.Mesh(new THREE.BoxGeometry(8,5,15),new THREE.MeshLambertMaterial({color:0x3a2e18}));
-truck.position.set(-22,2.5,-5); battery.add(truck);
-// Radar antenna AN/MPQ-65 (phased array panel)
-var radPanel=new THREE.Mesh(new THREE.BoxGeometry(12,9,1),new THREE.MeshLambertMaterial({color:0x0d1a2a,emissive:0x001133}));
-radPanel.position.set(22,7,0); radPanel.rotation.y=0.4; battery.add(radPanel);
-// Radar mount
-battery.add(function(){var m=new THREE.Mesh(new THREE.CylinderGeometry(0.6,0.8,7,8),new THREE.MeshLambertMaterial({color:0x080f1a}));m.position.set(22,3.5,0);return m;}());
-// Antenna glow
-var radGlow=new THREE.Mesh(new THREE.PlaneGeometry(10,7),new THREE.MeshBasicMaterial({color:0x002255,transparent:true,opacity:0.2,side:THREE.DoubleSide}));
-radGlow.position.set(22,7,0.6); radGlow.rotation.y=0.4; battery.add(radGlow);
+B(8,5,15,new THREE.MeshLambertMaterial({color:0x3a2e18}),-22,2.5,-5,battery);
+C(.6,.8,7,8,matSteel,22,3.5,0,battery);
+var fcr=new THREE.Mesh(new THREE.BoxGeometry(11,8,1),matDark);
+fcr.position.set(22,8,0); fcr.rotation.y=.4; battery.add(fcr);
+fcr.userData.rot=0.8;
+var fcrGlow=new THREE.Mesh(new THREE.PlaneGeometry(9,6),
+  new THREE.MeshBasicMaterial({color:0x002255,transparent:true,opacity:.18,side:THREE.DoubleSide}));
+fcrGlow.position.set(22,8,.6); fcrGlow.rotation.y=.4; battery.add(fcrGlow);
+B(5,4,7,matSand,0,2,24,battery);
+// 30km ring
+var r30=new THREE.Mesh(new THREE.RingGeometry(2306,2309,72),
+  new THREE.MeshBasicMaterial({color:0x00ff88,side:THREE.DoubleSide,transparent:true,opacity:.05}));
+r30.rotation.x=-Math.PI/2; r30.position.y=.3; battery.add(r30);
 scene.add(battery);
 
-// Defense perimeter rings
-[40,80,140].forEach(function(r,i){
-  var ring=new THREE.Mesh(new THREE.RingGeometry(r,r+1,48),new THREE.MeshBasicMaterial({color:0xc8aa70,side:THREE.DoubleSide,transparent:true,opacity:0.04-i*0.01}));
-  ring.rotation.x=-Math.PI/2; ring.position.y=0.2; scene.add(ring);
+// Roads
+scene.add(function(){var m=new THREE.Mesh(new THREE.BoxGeometry(6,.3,310),new THREE.MeshLambertMaterial({color:0x2a2010}));m.position.set(-40,.2,-140);return m;}());
+scene.add(function(){var m=new THREE.Mesh(new THREE.BoxGeometry(255,.3,6),new THREE.MeshLambertMaterial({color:0x2a2010}));m.position.set(120,.2,-40);return m;}());
+
+// Defense rings
+[40,85,145].forEach(function(r,i){
+  var rm=new THREE.Mesh(new THREE.RingGeometry(r,r+1,48),
+    new THREE.MeshBasicMaterial({color:0xc8aa70,side:THREE.DoubleSide,transparent:true,opacity:.035-i*.01}));
+  rm.rotation.x=-Math.PI/2; rm.position.y=.2; scene.add(rm);
 });
 
-// ── MESH FACTORIES ──
-// Orient missile mesh: nose (+Y in mesh) → velocity direction
-function orientMissile(mesh, vel) {
-  if(vel.length() < 0.01) return;
-  var dir = vel.clone().normalize();
-  // Missile body is built along +Y axis, we want +Y to point along velocity
-  var up = new THREE.Vector3(0, 1, 0);
-  mesh.quaternion.setFromUnitVectors(up, dir);
+// All rotating radar objects
+var radarObjs=[ewrDish, fcr];
+
+// ════════════════════════════════════════════════
+// MISSILE & THREAT MESHES
+// ════════════════════════════════════════════════
+function orientMesh(mesh, vel){
+  if(vel.length()<.01) return;
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), vel.clone().normalize());
 }
 
 function makePAC3(){
   var g=new THREE.Group();
-  var bodyMat=new THREE.MeshLambertMaterial({color:0x2255aa,emissive:0x000820});
-  var noseMat=new THREE.MeshLambertMaterial({color:0x334477});
-  var finMat=new THREE.MeshLambertMaterial({color:0x1a2a44});
-  // Body along Y axis (nose at +Y, nozzle at -Y)
-  g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.65,6.5,8),bodyMat));
-  // Nose at top
-  var nose=new THREE.Mesh(new THREE.ConeGeometry(0.55,2.2,8),noseMat);
-  nose.position.y=4.35; g.add(nose);
-  // Seeker dome
-  var dome=new THREE.Mesh(new THREE.SphereGeometry(0.35,8,6,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0x445566,transparent:true,opacity:0.7}));
-  dome.position.y=5.5; dome.rotation.x=Math.PI; g.add(dome);
-  // ACM ring
-  var acm=new THREE.Mesh(new THREE.TorusGeometry(0.7,0.11,5,20),new THREE.MeshBasicMaterial({color:0x0088ff,transparent:true,opacity:0.7}));
+  var bMat=new THREE.MeshLambertMaterial({color:0x2255aa,emissive:0x000820});
+  var nMat=new THREE.MeshLambertMaterial({color:0x334477});
+  var fMat=new THREE.MeshLambertMaterial({color:0x1a2a44});
+  g.add(new THREE.Mesh(new THREE.CylinderGeometry(.55,.65,6.5,8),bMat));
+  var nose=new THREE.Mesh(new THREE.ConeGeometry(.55,2.2,8),nMat); nose.position.y=4.35; g.add(nose);
+  var acm=new THREE.Mesh(new THREE.TorusGeometry(.7,.11,5,18),new THREE.MeshBasicMaterial({color:0x0088ff,transparent:true,opacity:.7}));
   acm.position.y=3.8; acm.userData.isACM=true; g.add(acm);
-  // 4 tail fins
   [0,1,2,3].forEach(function(i){
-    var fin=new THREE.Mesh(new THREE.BoxGeometry(0.07,1.4,1.8),finMat);
-    var a=i*Math.PI/2;
-    fin.position.set(Math.cos(a)*0.75,-2.8,Math.sin(a)*0.75);
-    fin.rotation.y=-a; g.add(fin);
+    var fin=new THREE.Mesh(new THREE.BoxGeometry(.07,1.4,1.8),fMat);
+    var a=i*Math.PI/2; fin.position.set(Math.cos(a)*.75,-2.8,Math.sin(a)*.75); fin.rotation.y=-a; g.add(fin);
   });
-  // Nozzle at bottom
-  var nozzle=new THREE.Mesh(new THREE.ConeGeometry(0.7,1.0,8),new THREE.MeshLambertMaterial({color:0x0a0a0a}));
-  nozzle.rotation.x=Math.PI; nozzle.position.y=-3.7; g.add(nozzle);
+  var noz=new THREE.Mesh(new THREE.ConeGeometry(.7,1,8),new THREE.MeshLambertMaterial({color:0x0a0a0a}));
+  noz.rotation.x=Math.PI; noz.position.y=-3.7; g.add(noz);
+  // Engine glow — white-blue point light effect (sphere at nozzle)
+  var glow=new THREE.Mesh(new THREE.SphereGeometry(0.55,6,6),
+    new THREE.MeshBasicMaterial({color:0xeef8ff,transparent:true,opacity:0.9}));
+  glow.position.y=-4.3; glow.userData.isGlow=true; g.add(glow);
   return g;
 }
 
-function makeThreatMesh(type){
+function makeThreatMesh(hyper){
   var g=new THREE.Group();
-  if(type==='ballistic'){
-    var mat=new THREE.MeshLambertMaterial({color:0xcc1100,emissive:0x200000});
-    g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.85,1.1,8,8),mat));
-    var tn=new THREE.Mesh(new THREE.ConeGeometry(0.85,2.8,8),new THREE.MeshLambertMaterial({color:0xaa0000}));
-    tn.position.y=5.4; g.add(tn);
-    [0,1,2].forEach(function(i){
-      var f=new THREE.Mesh(new THREE.BoxGeometry(0.08,2.2,2.5),new THREE.MeshLambertMaterial({color:0x2a0800}));
-      f.rotation.y=i*Math.PI*2/3; f.position.set(Math.cos(i*Math.PI*2/3)*1.1,-2.5,Math.sin(i*Math.PI*2/3)*1.1);
-      g.add(f);
-    });
-  } else {
-    var mat2=new THREE.MeshLambertMaterial({color:0xff5500,emissive:0x150500});
-    g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.6,0.75,7,8),mat2));
-    var cn=new THREE.Mesh(new THREE.ConeGeometry(0.6,2,8),new THREE.MeshLambertMaterial({color:0xdd3300}));
-    cn.position.y=4.5; g.add(cn);
-    var wing=new THREE.Mesh(new THREE.BoxGeometry(5.5,0.1,1.4),new THREE.MeshLambertMaterial({color:0x2a0a00}));
-    g.add(wing);
-    var htail=new THREE.Mesh(new THREE.BoxGeometry(2.5,0.08,0.8),new THREE.MeshLambertMaterial({color:0x2a0a00}));
-    htail.position.y=-2.8; g.add(htail);
-  }
+  var col=hyper?0xff6600:0xcc1100;
+  var mat=new THREE.MeshLambertMaterial({color:col,emissive:hyper?0x331100:0x200000});
+  g.add(new THREE.Mesh(new THREE.CylinderGeometry(.85,1.1,8,8),mat));
+  var tip=new THREE.Mesh(new THREE.ConeGeometry(.85,2.8,8),new THREE.MeshLambertMaterial({color:hyper?0xff8800:0xaa0000}));
+  tip.position.y=5.4; g.add(tip);
+  [0,1,2].forEach(function(i){
+    var f=new THREE.Mesh(new THREE.BoxGeometry(.08,2.2,2.5),new THREE.MeshLambertMaterial({color:0x2a0800}));
+    var a=i*Math.PI*2/3; f.rotation.y=a; f.position.set(Math.cos(a)*1.1,-2.5,Math.sin(a)*1.1); g.add(f);
+  });
   return g;
 }
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // GAME STATE
-// ═══════════════════════════════════════════════════════
-var enemies=[], missiles=[], particles=[], trails=[];
+// ════════════════════════════════════════════════
+var enemies=[], missiles=[], contrails=[], particles=[];
 var scoreD=0, scoreA=0, round=1;
-var totalMissiles=8, usedMissiles=0;
+var totalMis=MAX_MISSILES, usedMis=0;
 var eid=0, mid=0;
-var spawnT=0, spawnI=14, gtime=0;
 var focused=null;
-var camTheta=0, camPhi=0.13, camDist=280;
-var camTarget=new THREE.Vector3(0,60,0);
-var isDragging=false, lastMX=0, lastMY=0;
+var gtime=0;
 
-// ═══════════════════════════════════════════════════════
-// SECTOR CONTROL
-// ═══════════════════════════════════════════════════════
-// Angles: 0°=North(+Z), 90°=East(+X), 180°=South(-Z), 270°=West(-X)
-// Three.js: angle 0 = +Z axis, rotate clockwise = +X
-var sector = { from: 45, to: 315 }; // NE → North → NW
+// Base health state (linked to BASE_DEFS)
+var baseHP=[100,100,100]; // B-01, B-02, B-03
 
-var COMPASS_DIRS = {0:'ش',45:'ش.ش.ر',90:'ش.ر',135:'ج.ش.ر',180:'ج',225:'ج.غ',270:'غ',315:'ش.غ'};
+// Spawn queue: array of { fireAt: gtime }
+var spawnQueue=[];
+var roundPending=false;
+var roundWaiting=false; // انتظار ضغطة المستخدم
 
-function degToThreeAngle(deg) {
-  // Convert compass degrees to Three.js XZ angle
-  // Compass 0°=North(+Z), 90°=East(+X)
-  // Three.js: angle from +X axis counter-clockwise
-  return (90 - deg) * Math.PI / 180;
+function startRound(){
+  spawnQueue=[];
+  roundPending=false;
+  // 15 ثانية استعداد بين الجولات، ثم 6 صواريخ خلال 10 ثواني
+  var delay = (round===1) ? 2 : 15; // الجولة الأولى بعد 2 ثانية، باقي الجولات 15 ثانية
+  var start = gtime + delay;
+  var wave = 6;
+  // كل صاروخ يجي بعد 1-2 ثانية من السابق
+  var t = start;
+  for(var j=0;j<wave;j++){
+    spawnQueue.push({time: t, forceHyper: (j===wave-1)});
+    t += 1.0 + Math.random()*1.5; // 1 إلى 2.5 ثانية بين كل صاروخ
+  }
+  if(round>1) toast('⏳ جولة '+round+' تبدأ بعد 15 ثانية...');
 }
+startRound();
 
-function compassLabel(deg) {
-  var nearest = Math.round(deg/45)*45 % 360;
-  return COMPASS_DIRS[nearest] || deg+'°';
-}
-
-function updateSector() {
-  sector.from = parseInt(document.getElementById('sec-from').value);
-  sector.to   = parseInt(document.getElementById('sec-to').value);
-  document.getElementById('sec-from-val').textContent = sector.from + '°';
-  document.getElementById('sec-to-val').textContent   = sector.to + '°';
-  var span = sector.to >= sector.from ? sector.to - sector.from : 360 - sector.from + sector.to;
-  document.getElementById('sec-deg').textContent = span + '° قطاع';
-  document.getElementById('sec-label').textContent = compassLabel(sector.from) + ' ← → ' + compassLabel(sector.to);
-  drawCompass();
-}
-
-function drawCompass() {
-  var cv = document.getElementById('compass-cv');
-  var ctx = cv.getContext('2d');
-  var cx = 50, cy = 50, r = 44;
-  ctx.clearRect(0,0,100,100);
-
-  // Background
-  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
-  ctx.fillStyle='rgba(0,5,15,0.5)'; ctx.fill();
-
-  // Threat sector (arc)
-  var a1 = degToThreeAngle(sector.from) - Math.PI/2; // adjust for canvas top=0
-  // canvas: 0=right, clockwise. Compass: 0=top, clockwise
-  // canvas_angle = -(compass_deg - 90) * PI/180
-  function compassToCanvas(deg) { return (deg - 90) * Math.PI / 180; }
-  var ca1 = compassToCanvas(sector.from);
-  var ca2 = compassToCanvas(sector.to);
-  var span = sector.to >= sector.from ? sector.to - sector.from : 360 - sector.from + sector.to;
-
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.arc(cx, cy, r-2, ca1, ca2, false);
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(255,100,0,0.2)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,150,0,0.6)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  // Cardinal marks
-  ctx.fillStyle = 'rgba(251,191,36,0.4)';
-  ctx.font = '8px monospace';
-  ctx.textAlign = 'center';
-
-  // Center dot (battery)
-  ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2);
-  ctx.fillStyle='#00ff88'; ctx.fill();
-
-  // Arrow from=line
-  var fa = compassToCanvas(sector.from);
-  ctx.strokeStyle='rgba(255,200,0,0.8)'; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(cx,cy);
-  ctx.lineTo(cx+Math.cos(fa)*(r-4), cy+Math.sin(fa)*(r-4));
-  ctx.stroke();
-
-  var ta = compassToCanvas(sector.to);
-  ctx.beginPath(); ctx.moveTo(cx,cy);
-  ctx.lineTo(cx+Math.cos(ta)*(r-4), cy+Math.sin(ta)*(r-4));
-  ctx.stroke();
-}
-
-// Random angle within sector
-function randomSectorAngle() {
-  var from = sector.from, to = sector.to;
-  var span = to >= from ? to - from : 360 - from + to;
-  var rand = Math.random() * span;
-  return (from + rand) % 360;
-}
-
-updateSector(); // init
-
+// ── Missile bar ──
 function buildBar(){
-  var bar=document.getElementById('dcbar'); bar.innerHTML='';
-  for(var i=0;i<totalMissiles;i++){
+  var el=document.getElementById('dcbar'); el.innerHTML='';
+  for(var i=0;i<totalMis;i++){
     var d=document.createElement('div');
-    d.className='dcd'+(i<usedMissiles?' used':'');
-    d.id='dc'+i; bar.appendChild(d);
+    d.className='dot'+(i<usedMis?' used':'');
+    d.id='dc'+i; el.appendChild(d);
   }
 }
 buildBar();
+
 function refreshBar(){
-  for(var i=0;i<totalMissiles;i++){
+  for(var i=0;i<totalMis;i++){
     var d=document.getElementById('dc'+i);
-    if(d) d.className='dcd'+(i<usedMissiles?' used':'');
+    if(d) d.className='dot'+(i<usedMis?' used':'');
   }
-  var btn=document.getElementById('lbtn');
   var hasE=enemies.some(function(e){return e.alive;});
-  btn.disabled=(usedMissiles>=totalMissiles||!hasE);
+  var ready=totalMis-usedMis;
+  var btn=document.getElementById('lbtn');
+  btn.disabled=(ready<=0||!hasE);
   document.getElementById('lstatus').textContent=
-    usedMissiles>=totalMissiles?'لا يوجد صواريخ':
-    !hasE?'لا يوجد تهديد مرصود':
-    'جاهز — '+(totalMissiles-usedMissiles)+' صاروخ';
+    ready<=0?'انتهت الصواريخ':
+    !hasE?(spawnQueue.length>0?'انتظر الهدف...':'لا يوجد تهديد'):
+    'جاهز — '+ready+' صاروخ';
 }
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // SPAWN THREAT
-// ═══════════════════════════════════════════════════════
-function spawnThreat(){
-  var compassDeg = randomSectorAngle();
-  var threeAngle = (90 - compassDeg) * Math.PI / 180;
-  var dist = 800 + Math.random()*400;
-  var type = Math.random()<0.5 ? 'ballistic' : 'cruise';
+// ════════════════════════════════════════════════
+function spawnThreat(forceHyper){
+  var launcher=LAUNCHERS[Math.floor(Math.random()*LAUNCHERS.length)];
+  var r=Math.random();
+  var tgtIdx=r<.5?0:r<.75?1:2;
+  var tgtDef=BASE_DEFS[tgtIdx];
+  var chosenTarget=new THREE.Vector3(tgtDef.sx,2,tgtDef.sz);
 
-  var startX = Math.cos(threeAngle)*dist;
-  var startZ = Math.sin(threeAngle)*dist;
-  var startY, pat;
+  var isHyper=forceHyper===true;
+  var realSpd=isHyper?(10+Math.random()*4)*340:(3.5+Math.random()*1.5)*340;
+  var simSpd=toSim(realSpd);
 
-  if(type==='ballistic'){
-    // Ballistic: comes from high altitude, steep angle — like a real SRBM terminal phase
-    startY = 350 + Math.random()*200;
-    pat = 'ballistic';
-  } else {
-    // Cruise: comes from horizon, very low
-    startY = 20 + Math.random()*25;
-    pat = 'cruise';
-  }
+  var CRUISE_ALT = 1154; // 15km = 15000/13 = 1154 sim units
 
-  var pos = new THREE.Vector3(startX, startY, startZ);
-  var mesh = makeThreatMesh(type);
-  mesh.position.copy(pos); scene.add(mesh);
+  // ── نقطة البداية: خارج نطاق EWR (50km) ──
+  // الصاروخ يظهر على بعد ~4200u من الهدف، خارج دائرة الكشف
+  // ثم يطير أفقياً ويدخل EWR بعد ~3 ثواني (عادي) أو 1 ثانية (فرط صوتي)
+  var spawnDist = 4000 + Math.random()*400; // خارج EWR=3846
+  var lx=launcher.sx-chosenTarget.x, lz=launcher.sz-chosenTarget.z;
+  var llen=Math.sqrt(lx*lx+lz*lz)||1;
+  var startX=chosenTarget.x+(lx/llen)*spawnDist;
+  var startZ=chosenTarget.z+(lz/llen)*spawnDist;
 
-  var realSpd = type==='ballistic'
-    ? (2.5 + Math.random()*1.5 + round*0.1)*340
-    : (0.75 + Math.random()*0.4 + round*0.03)*340;
-  var simSpd = realToSimVel(realSpd);
+  // نقطة بدء النزول: 280-350 وحدة من الهدف
+  var diveStart = -1; // يُحدد بالرادار — النزول عند دخول نطاق PAC3 30km
+
+  // السرعة الأولية: أفقية فقط نحو الهدف
+  var dx=chosenTarget.x-startX, dz_=chosenTarget.z-startZ;
+  var dlen=Math.sqrt(dx*dx+dz_*dz_)||1;
+  var initVel=new THREE.Vector3((dx/dlen)*simSpd, 0, (dz_/dlen)*simSpd);
+
+  var mesh=makeThreatMesh(isHyper);
+  mesh.position.set(startX, CRUISE_ALT, startZ);
+  orientMesh(mesh, initVel);
+  scene.add(mesh);
+
+  if(isHyper) toast('⚡ '+launcher.id+' فرط صوتي M'+(realSpd/340).toFixed(0)+' → '+tgtDef.id);
+  else toast('📡 '+launcher.id+' ('+launcher.bearing+'°) → '+tgtDef.id+' '+tgtDef.name);
 
   enemies.push({
-    id:++eid, mesh:mesh, type:type, pattern:pat,
-    pos:pos.clone(),
-    vel:new THREE.Vector3(),
-    target:new THREE.Vector3(0,5,0),
-    simSpeed:simSpd, realSpeed:realSpd,
-    phase:Math.random()*Math.PI*2,
+    id:++eid, mesh:mesh,
+    pos:new THREE.Vector3(startX, CRUISE_ALT, startZ),
+    vel:initVel,
+    target:chosenTarget,
+    targetId:tgtDef.id, targetIdx:tgtIdx,
+    launcherId:launcher.id, launcherBearing:launcher.bearing,
+    isHyper:isHyper,
+    phase:'cruise',    // cruise → dive
+    diveStart:diveStart,
+    cruiseAlt:CRUISE_ALT,
+    simSpd:simSpd, realSpd:realSpd,
     alive:true,
-    startDist: dist,
   });
 }
 
-// ═══════════════════════════════════════════════════════
-// LAUNCH PAC-3
-// ═══════════════════════════════════════════════════════
-function launchPAC3(){
-  if(usedMissiles>=totalMissiles){toast('لا يوجد صواريخ PAC-3!');return;}
-  var live=enemies.filter(function(e){return e.alive;});
-  if(live.length===0){toast('لا يوجد تهديد مرصود');return;}
-  // TVM: prefer unengaged, nearest
-  var engaged=missiles.filter(function(m){return m.alive&&m.target;}).map(function(m){return m.target.id;});
-  var target=null, best=Infinity;
-  live.forEach(function(e){
-    var dist=e.pos.length();
-    var pri=engaged.indexOf(e.id)>=0?dist*2.5:dist;
-    if(pri<best){best=pri;target=e;}
-  });
-  if(!target) return;
-
-  // Launch from one of the 4 launcher positions
-  var lx=lpos[mid%4][0], lz=lpos[mid%4][2];
-  var launchPos=new THREE.Vector3(lx,6,lz);
-  var mesh=makePAC3();
-  mesh.position.copy(launchPos); scene.add(mesh);
-
-  // Step 1: launcher tube points toward threat sector at ~45° elevation
-  var toTgt = target.pos.clone().sub(launchPos);
-  var horiz = new THREE.Vector3(toTgt.x, 0, toTgt.z).normalize();
-  // Tube direction: 45° elevation toward threat
-  var tubeDir = new THREE.Vector3(horiz.x*0.707, 0.707, horiz.z*0.707);
-  orientMissile(mesh, tubeDir);
-
-  var pac={
-    id:++mid, mesh:mesh,
-    pos:launchPos.clone(),
-    vel:tubeDir.clone().multiplyScalar(SIM_MACH * 0.4), // eject along tube at Mach 0.4
-    prevVel:new THREE.Vector3(),
-    target:target,
-    alive:true,
-    t_flight: 0,
-    burnFrac: 0,
-    state: 'boost',
-    ascendTimer: 0,
-    vx:0,vy:0,vz:0,
-    roll:0, rollRate:3*2*Math.PI,
-    pitch:0, yaw:0,
-    gLoad:0, machNum:0,
-    launchDir: tubeDir.clone(), // remember initial tube direction
-  };
-  missiles.push(pac);
-  usedMissiles++;
-  focused=pac;
-  refreshBar();
-  toast('🚀 PAC-3 #'+pac.id+' — إطلاق! قُفِل TVM على التهديد #'+target.id);
-}
-
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // UPDATE THREAT
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function updateThreat(e,dt){
   if(!e.alive) return;
-  var toT=e.target.clone().sub(e.pos);
-  var dist=toT.length();
-  if(dist<20){
-    scoreA++; document.getElementById('sc-atk').textContent=scoreA;
-    explode(e.pos.clone(),0xff3300,30); showAlert('⚠ تهديد اخترق الدفاع!');
+
+  var toTarget=e.target.clone().sub(e.pos);
+  var dist=toTarget.length();
+
+  // ── إصابة الهدف ──
+  if(dist<25){
+    scoreA++; var ea=document.getElementById('sc-atk'); if(ea) ea.textContent=scoreA;
+    explode(e.pos.clone(),0xff3300,35);
+    var dmg=e.isHyper?40:25;
+    baseHP[e.targetIdx]=Math.max(0,baseHP[e.targetIdx]-dmg);
+    if(baseHP[e.targetIdx]<=0){
+      showAlert('💥 '+e.targetId+' '+BASE_DEFS[e.targetIdx].name+' دُمِّرت!');
+      if(e.targetIdx===0){totalMis=0;refreshBar();}
+      if(e.targetIdx===1){R_RADAR=R_PAC3;}
+    } else {
+      showAlert('⚠ '+e.targetId+' أصيبت! '+baseHP[e.targetIdx]+'%');
+    }
     removeEnemy(e); return;
   }
-  var dir=toT.normalize(), mv=dir.clone(), t=gtime;
 
-  if(e.pattern==='ballistic'){
-    // Ballistic: steep diving trajectory, curves toward target near end
-    var distToTarget = e.pos.length();
-    if(e.pos.y > 120){
-      // High altitude: steep dive, mostly downward
-      mv.y -= 1.2;
-      mv.x *= 0.5; mv.z *= 0.5;
-    } else if(e.pos.y > 40){
-      // Mid: starting to curve toward target
-      mv.y -= 0.4;
-    } else {
-      // Terminal: flat pull-out toward base
-      mv.y *= 0.3;
-      mv.x += Math.sin(t*1.5+e.phase)*0.15;
+  if(e.phase==='cruise'){
+    var spd=e.simSpd;
+    var toFlat=new THREE.Vector3(e.target.x-e.pos.x, 0, e.target.z-e.pos.z).normalize();
+    var altErr=e.cruiseAlt-e.pos.y;
+    e.vel.x=toFlat.x*spd;
+    e.vel.z=toFlat.z*spd;
+    e.vel.y=altErr*2.0; // تصحيح أسرع للبقاء على الارتفاع
+
+    var horizDist=Math.sqrt(Math.pow(e.target.x-e.pos.x,2)+Math.pow(e.target.z-e.pos.z,2));
+    // بدء النزول عند دخول نطاق PAC3 (30km = 2308 وحدة من المركز)
+    var distFromOrigin=Math.sqrt(e.pos.x*e.pos.x+e.pos.z*e.pos.z);
+    if(distFromOrigin<=R_PAC3){
+      e.phase='dive';
+      e.diveInitDist=horizDist;
+
+      // ── حساب السرعة الأولية: قوس طبيعي بجاذبية فقط ──
+      // من معادلات الحركة مع زاوية اصطدام مطلوبة θ:
+      //   rhs = horizDist*tan(θ) - (curY - tgtY)
+      //   T   = sqrt(2*rhs/G)
+      //   vH  = horizDist/T
+      //   vV  = -vH*tan(θ) + G*T  ← سالب = نازل من البداية
+      var curY   = e.pos.y;
+      var tgtY   = e.target.y;
+      var impDeg = 50 + Math.random()*15; // زاوية اصطدام 50-65° — قوس أوسع وأبطأ
+      var impRad = impDeg*Math.PI/180;
+      var rhs    = horizDist*Math.tan(impRad) - (curY - tgtY);
+      if(rhs > 1){
+        var T_d  = Math.sqrt(2*rhs/G);
+        var vH_d = horizDist/T_d;
+        var vV_d = -vH_d*Math.tan(impRad) + G*T_d;
+        var toTH = new THREE.Vector3(
+          e.target.x-e.pos.x, 0, e.target.z-e.pos.z
+        ).normalize();
+        // ضبط السرعة مباشرة — من هنا جاذبية فقط
+        e.vel.set(toTH.x*vH_d, vV_d, toTH.z*vH_d);
+      }
     }
-    mv.normalize();
+
   } else {
-    // Cruise: flat low flight, gentle weave
-    var targetAlt = 18 + Math.sin(t*0.25+e.phase)*6;
-    mv.y = (targetAlt - e.pos.y) * 0.12;
-    mv.x += Math.sin(t*0.4+e.phase)*0.12;
-    mv.z += Math.cos(t*0.35+e.phase)*0.08;
-    mv.normalize();
+    // ── نزول طبيعي: جاذبية فقط، لا توجيه ──
+    e.vel.y -= G*dt;
   }
-  e.vel.lerp(mv.clone().multiplyScalar(e.simSpeed),dt*2.5);
+
+  e.vel.multiplyScalar(1-0.0005*dt);
   e.pos.addScaledVector(e.vel,dt);
-  if(e.pos.y<8) e.pos.y=8;
+  if(e.pos.y<4) e.pos.y=4;
   e.mesh.position.copy(e.pos);
-  if(e.vel.length()>0.5){
-    var up2=new THREE.Vector3(0,1,0);
-    var dir2=e.vel.clone().normalize();
-    // Cruise flies mostly horizontal — tilt forward along velocity
-    e.mesh.quaternion.setFromUnitVectors(up2, dir2);
-  }
-  if(Math.random()<0.35) addTrail(e.pos.clone(),e.type==='ballistic'?0xff2200:0xff6600,1.0,0.55);
+  orientMesh(e.mesh,e.vel);
+  if(Math.random()<.5) addContrail(e.pos.clone(),e.isHyper);
 }
 
 function removeEnemy(e){
   scene.remove(e.mesh); e.alive=false;
   enemies=enemies.filter(function(x){return x!==e;});
   missiles.forEach(function(m){
-    if(m.target===e&&m.alive&&m.state!=='ascending'){
-      m.state='ascending'; m.ascendTimer=PHYSICS.ascend_sec;
-    }
+    if(m.target===e&&m.alive&&m.state!=='safe'){m.state='safe';m.safeT=3;}
   });
   refreshBar();
 }
 
-// ═══════════════════════════════════════════════════════
-// UPDATE PAC-3 — PROPER 6DOF PHYSICS
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// LAUNCH PAC-3
+// ════════════════════════════════════════════════
+function launch(){
+  if(usedMis>=totalMis){toast('لا يوجد صواريخ!');return;}
+  var live=enemies.filter(function(e){return e.alive;});
+  if(!live.length){toast('لا يوجد هدف في المدى');return;}
+
+  // TVM: prefer unengaged, then nearest
+  var engaged=missiles.filter(function(m){return m.alive&&m.target;}).map(function(m){return m.target.id;});
+  var best=null, bestScore=Infinity;
+  live.forEach(function(e){
+    var d=e.pos.length();
+    var s=engaged.indexOf(e.id)>=0?d*2.5:d;
+    if(s<bestScore){bestScore=s;best=e;}
+  });
+  if(!best) return;
+
+  // ── إطلاق بزاوية 40° باتجاه الهدف ──
+  // 10m حقيقي = 10/13 = 0.77 وحدة sim — بعدها يبدأ التوجيه
+  var LAUNCH_ANGLE = 40*Math.PI/180; // 40° من الأفقي
+  var GUIDANCE_DIST = 0.77;          // 10m بوحدات sim
+
+  var lx=lpos[mid%4][0], lz=lpos[mid%4][2];
+  var launchPos=new THREE.Vector3(lx,6,lz);
+
+  // اتجاه أفقي نحو الهدف
+  var toTgt=best.pos.clone().sub(launchPos);
+  var horiz=new THREE.Vector3(toTgt.x,0,toTgt.z).normalize();
+
+  // سرعة إطلاق: 40° من الأفقي — cos(40°)=أفقي, sin(40°)=عمودي
+  var tubeDir=new THREE.Vector3(
+    horiz.x*Math.cos(LAUNCH_ANGLE),
+    Math.sin(LAUNCH_ANGLE),
+    horiz.z*Math.cos(LAUNCH_ANGLE)
+  );
+
+  var mesh=makePAC3();
+  mesh.position.copy(launchPos);
+  orientMesh(mesh,tubeDir);
+  scene.add(mesh);
+
+  var pac={
+    id:++mid, mesh:mesh,
+    pos:launchPos.clone(),
+    vel:tubeDir.clone().multiplyScalar(SM*.3), // سرعة أولية منخفضة عند الفوهة
+    target:best, alive:true,
+    t:0, burnFrac:0,
+    state:'boost', safeT:0,
+    launchDir:tubeDir.clone(),
+    launchPos:launchPos.clone(),
+    guidanceArmed:false, // يصبح true بعد 10m
+    roll:0, rollRate:3*Math.PI*2,
+    vx:0,vy:0,vz:0, pitch:0,yaw:0,
+    gLoad:0, machN:0,
+  };
+  missiles.push(pac);
+  usedMis++; focused=pac;
+  refreshBar();
+  toast('🚀 PAC-3 #'+pac.id+' → #'+best.id+' ('+best.launcherId+')');
+}
+
+function beginNextRound(){
+  roundWaiting=false; roundPending=false;
+  round++;
+  var eRnd=document.getElementById('sc-rnd'); if(eRnd) eRnd.textContent=round;
+  toast('🔄 جولة '+round+' — '+MAX_MISSILES+' صواريخ جاهزة');
+  startRound();
+  // Restore launch button
+  var btn=document.getElementById('lbtn');
+  if(btn){ btn.textContent='🚀 أطلق PAC-3'; btn.onclick=launch; }
+  refreshBar();
+}
+
+// ════════════════════════════════════════════════
+// UPDATE PAC-3
+// ════════════════════════════════════════════════
+// PAC-3 CRI أرقام حقيقية:
+// Thrust peak: 150kN / 318kg = 472 m/s² ~ 48G
+// Thrust avg:   75kN / 240kg = 312 m/s² ~ 32G
+// Max speed: Mach 5 = 130 u/s
+// Max maneuver: 40G
+// Burn time: 6s
+var SIM_BURN=6, SIM_MAXSPD=5*SM;
+var THRUST_PEAK=48*G, THRUST_AVG=32*G;
+var GUIDANCE_ARM_DIST=0.77; // 10m بوحدات sim
+
 function updateMissile(m,dt){
   if(!m.alive) return;
-  m.t_flight += dt; // real-time flight clock
+  m.t+=dt;
 
-  // ── ASCENDING (safe detonate) ──
-  if(m.state==='ascending'){
-    m.ascendTimer-=dt;
-    var v=m.vel.length();
-    var mach=simMach(v, m.pos.y);
-    var cd=getCd(mach);
-    var rho=airDensity(m.pos.y);
-    var v_real=simToRealVel(v);
-    var drag_force_real=0.5*rho*v_real*v_real*PHYSICS.S_ref*cd;
-    var mass=getMass(Math.min(m.t_flight/SIM_BURN_TIME,1));
-    var drag_accel_asc=(drag_force_real/mass)*(SIM_MACH/340.0);
-    m.vel.y -= SIM_GRAVITY*dt;
-    if(v>0.01) m.vel.multiplyScalar(Math.max(0, 1 - drag_accel_asc*dt*0.2));
+  // ── وضع الأمان ──
+  if(m.state==='safe'){
+    m.safeT-=dt;
+    m.vel.y-=G*dt;
     m.pos.addScaledVector(m.vel,dt);
+    if(m.pos.y<3) m.pos.y=3;
     m.mesh.position.copy(m.pos);
-    m.pitch=Math.PI/2; m.roll+=m.rollRate*dt;
-    m.vx=m.vel.x; m.vy=m.vel.y; m.vz=m.vel.z;
-    m.gLoad=0; m.machNum=mach;
-    addTrail(m.pos.clone(),0x0033aa,0.6,0.04);
-    if(m.ascendTimer<=0){
-      explode(m.pos.clone(),0x0055cc,12);
-      toast('💨 PAC-3 #'+m.id+' — انفجر بأمان على '+m.pos.y.toFixed(0)+' وحدة ارتفاع');
-      removeMissile(m);
-    }
+    orientMesh(m.mesh,m.vel);
+    addContrail(m.pos.clone(),false);
+    if(m.safeT<=0){explode(m.pos.clone(),0x0055cc,10);removeMissile(m);}
     return;
   }
 
-  // ── CHECK TARGET ──
-  if(!m.target||!m.target.alive){
-    m.state='ascending'; m.ascendTimer=PHYSICS.ascend_sec; return;
-  }
+  if(!m.target||!m.target.alive){m.state='safe';m.safeT=3;return;}
 
-  // ── COMPUTE PHYSICS ──
   var v=m.vel.length();
-  var mach=simMach(v, m.pos.y);
-  m.machNum=mach;
+  m.machN=v/SM;
 
-  // Current mass fraction
-  m.burnFrac=Math.min(m.t_flight/SIM_BURN_TIME, 1.0);
-  var mass=getMass(m.burnFrac);
-
-  // THRUST acceleration (sim units/s²) — direct from T/W ratio calculation
-  // At launch: T/W=24 → net_accel = (24-1)*g = 23g (subtract gravity already included below)
-  // Thrust profile: boost(0-0.8s) → sustain(0.8-6s) → coast
-  var thrust_accel_sim = 0;
-  if(m.t_flight < 0.8) {
-    // BOOST: ramp from 0 to peak (23G net)
-    thrust_accel_sim = SIM_THRUST_ACCEL * (m.t_flight / 0.8);
-  } else if(m.t_flight < SIM_BURN_TIME) {
-    // SUSTAIN: ~12G net (avg thrust / current mass, minus gravity)
-    var frac = mass / PHYSICS.mass_launch;
-    thrust_accel_sim = SIM_THRUST_ACCEL * 0.52 * (1/frac); // lighter = more accel
-  }
-  // COAST: thrust_accel_sim stays 0
-
-  // DRAG deceleration (sim units/s²) — CD * q * S / mass, scaled
-  var cd=getCd(mach);
-  var rho=airDensity(m.pos.y);
-  var v_real=simToRealVel(v);
-  var drag_force_real=0.5*rho*v_real*v_real*PHYSICS.S_ref*cd;
-  var drag_accel_sim = (drag_force_real / mass) * (SIM_MACH / 340.0);
-
-  // Net axial acceleration (forward minus drag)
-  var net_accel_sim = thrust_accel_sim - drag_accel_sim;
-
-  // Update phase
-  if(m.t_flight<0.8) m.state='boost';
-  else if(m.pos.distanceTo(m.target.pos)>100) m.state='midcourse';
-  else m.state='terminal';
-
-  // ── 120° FOV CHECK (seeker field of view) ──
-  var toTarget=m.target.pos.clone().sub(m.pos);
-  var distToTgt=toTarget.length();
-  var dirToTgt=toTarget.normalize();
-  var fwd=v>0.5?m.vel.clone().normalize():dirToTgt.clone();
-  var dot=fwd.dot(dirToTgt);
-  // Only check FOV once past boost (seeker active)
-  if(m.t_flight>1.0 && distToTgt>15 && dot<PHYSICS.fov_half_cos){
-    m.state='ascending'; m.ascendTimer=PHYSICS.ascend_sec;
-    toast('📡 PAC-3 #'+m.id+' — هدف خرج عن مخروط الرؤية 120° — صاعد للأمان');
-    return;
+  // ── تفعيل التوجيه بعد 10m من الإطلاق ──
+  if(!m.guidanceArmed){
+    if(m.pos.distanceTo(m.launchPos)>=GUIDANCE_ARM_DIST) m.guidanceArmed=true;
   }
 
-  // ── PROPORTIONAL NAVIGATION ──
-  var tEst=distToTgt/(v+0.01);
-  var intercept=m.target.pos.clone().addScaledVector(m.target.vel,tEst*0.5);
-  var guidDir=intercept.sub(m.pos);
-  if(guidDir.length()>0.01) guidDir.normalize();
+  // ── الدفع ──
+  var thr=0;
+  if(m.t<0.5)        thr=THRUST_PEAK*(m.t/0.5); // تصاعد تدريجي
+  else if(m.t<SIM_BURN) thr=THRUST_AVG;
 
-  // BOOST phase: first 0.4s fly along tube (realistic ejection), then curve toward target
-  if(m.state==='boost'){
-    var boostFrac = Math.min(m.t_flight / 0.8, 1.0);
-    if(boostFrac < 0.4){
-      // Pure tube direction — fly straight out of launcher
-      guidDir.copy(m.launchDir);
-    } else {
-      // Progressively curve toward target (0.4→0.8s)
-      var curveFrac = (boostFrac - 0.4) / 0.6;
-      guidDir.lerp(m.launchDir, Math.max(0, 1.0 - curveFrac*1.6));
-      guidDir.normalize();
+  // ── السحب الهوائي ──
+  var cd = m.machN<0.8?0.40 : m.machN<1.2?0.80 : m.machN<3.0?0.40 : 0.25;
+  var drag = cd*v*v*0.0008;
+
+  // ── تطبيق الدفع على محور السرعة الحالي ──
+  var velDir=v>0.1?m.vel.clone().normalize():m.launchDir.clone();
+  m.vel.addScaledVector(velDir,(thr-drag)*dt);
+
+  // ── اختيار اتجاه التوجيه ──
+  var guidDir;
+
+  if(!m.guidanceArmed){
+    // قبل 10m: يتبع اتجاه الأنبوب 40°
+    guidDir=m.launchDir.clone();
+    m.state='boost';
+
+  } else {
+    // ── التوجيه الموازي العكسي ──
+    //
+    // المبدأ: PAC-3 يقرأ اتجاه حركة العدو ثم يطير بشكل
+    // معاكس تماماً — اعتراض وجهاً لوجه (head-on)
+    //
+    // 1. اتجاه العدو المعاكس (anti-parallel)
+    var eVel=m.target.vel.clone();
+    var eSpd=eVel.length();
+    var antiDir=eSpd>0.1?eVel.clone().negate().normalize():new THREE.Vector3(0,1,0);
+
+    // 2. نقطة الاعتراض: نحاكي مسار العدو مع الجاذبية
+    var dToT=m.target.pos.clone().sub(m.pos).length();
+    var closingSpd=v+eSpd; // head-on: closing speed = مجموع السرعتين
+    var tEst=dToT/(closingSpd+0.01);
+    var predPos=m.target.pos.clone();
+    var predVel=m.target.vel.clone();
+    var steps=10, dtP=tEst/steps;
+    for(var pi=0;pi<steps;pi++){
+      predVel.y-=G*dtP;
+      predPos.addScaledVector(predVel,dtP);
+    }
+
+    // 3. اتجاه نحو نقطة الاعتراض
+    var toInt=predPos.sub(m.pos);
+    var dInt=toInt.length();
+    if(dInt>0.5) toInt.normalize(); else toInt.copy(antiDir);
+
+    // 4. مزج: نحو الاعتراض + موازٍ للمسار العكسي
+    // كلما اقتربنا → نعطي وزناً أكبر للمسار العكسي (الموازاة)
+    var prox=Math.min(dToT/200,1.0); // 1=بعيد, 0=قريب
+    var blendIntercept=0.6+prox*0.3;  // 0.6-0.9 نحو الاعتراض
+    var blendAnti=1.0-blendIntercept; // 0.1-0.4 موازٍ للمسار العكسي
+    guidDir=toInt.clone().multiplyScalar(blendIntercept)
+            .addScaledVector(antiDir,blendAnti)
+            .normalize();
+
+    // مرحلة الطيران
+    m.state=dToT>90?'midcourse':'terminal';
+
+    // فحص FOV (فقد الهدف إذا خرج عن 90°)
+    var fwd=v>0.5?m.vel.clone().normalize():guidDir.clone();
+    if(m.t>1.5&&dToT>15&&fwd.dot(toInt)<Math.cos(90*Math.PI/180)){
+      m.state='safe'; m.safeT=3;
+      toast('📡 PAC-3 #'+m.id+' — فقد الهدف');
+      return;
+    }
+
+    // ── اعتراض ناجح ──
+    if(dToT<8){
+      explode(m.pos.clone(),0x00ccff,18);
+      explode(m.target.pos.clone(),0xff4400,35);
+      scoreD++; var ed=document.getElementById('sc-def'); if(ed) ed.textContent=scoreD;
+      if(usedMis>0) usedMis--;
+      toast('💥 PAC-3 #'+m.id+' اعترض #'+m.target.id);
+      removeEnemy(m.target); removeMissile(m); return;
     }
   }
 
-  // Thrust is ALWAYS applied along current velocity direction (axial)
-  var velDir = v > 0.1 ? m.vel.clone().normalize() : guidDir.clone();
-  var thrustVec = velDir.clone().multiplyScalar(thrust_accel_sim * dt);
-  m.vel.add(thrustVec);
+  // ── توجيه ناعم: تطبيق عزم دوران محدود بـ G ──
+  var maxG=m.state==='terminal'?40*G : m.state==='midcourse'?20*G : 8*G;
+  var curSpd=m.vel.length();
+  var desired=guidDir.clone().multiplyScalar(Math.max(curSpd,SM*0.3));
+  var dv=desired.sub(m.vel);
+  var maxDv=maxG*dt;
+  if(dv.length()>maxDv) dv.normalize().multiplyScalar(maxDv);
+  m.gLoad=dv.length()/(G*dt+0.001);
+  m.vel.add(dv);
 
-  // PN steering — lateral correction toward intercept point
-  var currentSpeed = m.vel.length();
-  var desiredVel = guidDir.clone().multiplyScalar(Math.max(currentSpeed, SIM_MACH*0.3));
+  // ── الجاذبية ──
+  m.vel.y-=G*dt;
 
-  // Limit lateral acceleration to 40G
-  var maxDelta=(PHYSICS.max_G * SIM_GRAVITY) * dt;
-  var deltaVel=desiredVel.clone().sub(m.vel);
-  if(deltaVel.length()>maxDelta) deltaVel.normalize().multiplyScalar(maxDelta);
+  // ── حد السرعة ──
+  if(m.vel.length()>SIM_MAXSPD) m.vel.normalize().multiplyScalar(SIM_MAXSPD);
 
-  // G-load display
-  var accel_lateral=deltaVel.clone();
-  var fwdComp=fwd.clone().multiplyScalar(fwd.dot(deltaVel));
-  accel_lateral.sub(fwdComp);
-  m.gLoad=accel_lateral.length()/(SIM_GRAVITY*dt+0.0001);
-
-  m.prevVel.copy(m.vel);
-  m.vel.add(deltaVel);
-
-  // Gravity — acts on Y axis (sim units/s²)
-  m.vel.y -= SIM_GRAVITY * dt;
-
-  // Speed clamp
-  if(m.vel.length()>PAC3_SIM_MAXSPEED) m.vel.normalize().multiplyScalar(PAC3_SIM_MAXSPEED);
-
-  // Integrate position
   m.pos.addScaledVector(m.vel,dt);
   if(m.pos.y<3) m.pos.y=3;
   m.mesh.position.copy(m.pos);
+  orientMesh(m.mesh,m.vel);
 
-  // Orient nose along velocity direction (quaternion, correct for Y-up body)
-  if(m.vel.length()>0.5) orientMissile(m.mesh, m.vel);
-
+  // ACM + glow
   m.roll+=m.rollRate*dt;
-  m.mesh.children.forEach(function(c){if(c.userData.isACM)c.rotation.y=m.roll;});
+  m.mesh.children.forEach(function(c){
+    if(c.userData.isACM) c.rotation.y=m.roll;
+    if(c.userData.isGlow){
+      var burning=(m.t<SIM_BURN);
+      c.visible=burning;
+      if(burning) c.material.opacity=0.7+Math.sin(gtime*30)*0.2;
+    }
+  });
 
-  // 6DOF values
   m.vx=m.vel.x; m.vy=m.vel.y; m.vz=m.vel.z;
   m.pitch=Math.atan2(guidDir.y,Math.sqrt(guidDir.x*guidDir.x+guidDir.z*guidDir.z));
   m.yaw=Math.atan2(guidDir.x,guidDir.z);
 
-  // Trail: orange during boost, blue during flight
-  var trailCol=m.t_flight<0.8?0xff7700:(m.state==='terminal'?0x00aaff:0x0044cc);
-  var trailSz=m.t_flight<0.8?1.8:0.8;
-  addTrail(m.pos.clone(),trailCol,trailSz,0.05);
-
-  // ── HIT-TO-KILL INTERCEPT ──
-  if(distToTgt<7){
-    explode(m.pos.clone(),0x0099ff,14);
-    explode(m.target.pos.clone(),0xff5500,32);
-    scoreD++; document.getElementById('sc-def').textContent=scoreD;
-    toast('💥 PAC-3 #'+m.id+' — Hit-to-Kill! دمّر التهديد #'+m.target.id+' عند M'+mach.toFixed(1));
-    removeEnemy(m.target); removeMissile(m);
-  }
+  addContrail(m.pos.clone(), m.t<SIM_BURN);
 }
 
 function removeMissile(m){
   scene.remove(m.mesh); m.alive=false;
   missiles=missiles.filter(function(x){return x!==m;});
-  usedMissiles=Math.max(0,usedMissiles-1);
   if(focused===m) focused=missiles.find(function(x){return x.alive;})||null;
   refreshBar();
 }
 
-// ═══════════════════════════════════════════════════════
-// TRAILS & PARTICLES
-// ═══════════════════════════════════════════════════════
-function addTrail(pos,color,size,decay){
-  var m=new THREE.Mesh(new THREE.SphereGeometry(size||0.8,4,4),new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:0.7}));
-  m.position.copy(pos); scene.add(m);
-  trails.push({m:m,life:0.8,decay:decay||0.05});
+// ════════════════════════════════════════════════
+// CONTRAILS & PARTICLES
+// ════════════════════════════════════════════════
+function addContrail(pos,hot){
+  var col=hot?0xfffde0:0xd8dde8; // boost=white-yellow, trail=white-grey
+  var sz=hot?1.4+Math.random()*.6:0.9+Math.random()*.5;
+  var m=new THREE.Mesh(new THREE.SphereGeometry(sz,5,4),
+    new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:hot?.5:.38}));
+  m.position.copy(pos);
+  m.userData.drift=new THREE.Vector3((Math.random()-.5)*.7,.1+Math.random()*.25,(Math.random()-.5)*.7);
+  m.userData.hot=hot;
+  scene.add(m);
+  contrails.push({m:m,life:1,decay:hot?.015:.009});
 }
-function updateTrails(dt){
-  trails=trails.filter(function(p){
-    p.life-=p.decay;
-    if(p.life<=0){scene.remove(p.m);return false;}
-    p.m.material.opacity=p.life*0.65; p.m.scale.setScalar(p.life*0.4+0.1); return true;
+function updateContrails(dt){
+  contrails=contrails.filter(function(c){
+    c.life-=c.decay;
+    if(c.life<=0){scene.remove(c.m);return false;}
+    var ex=1+(1-c.life)*3.5;
+    c.m.scale.setScalar(ex);
+    c.m.position.addScaledVector(c.m.userData.drift,dt);
+    c.m.material.opacity=c.life*(c.m.userData.hot?.55:.30);
+    return true;
   });
 }
-function explode(pos,color,count){
-  for(var i=0;i<(count||16);i++){
-    var m=new THREE.Mesh(new THREE.SphereGeometry(Math.random()*2.2+0.4,4,4),new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:1}));
+function explode(pos,col,n){
+  for(var i=0;i<(n||16);i++){
+    var m=new THREE.Mesh(new THREE.SphereGeometry(Math.random()*2+.4,4,4),
+      new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:1}));
     m.position.copy(pos); scene.add(m);
-    var vel=new THREE.Vector3((Math.random()-.5)*40,(Math.random()-.5)*35,(Math.random()-.5)*40);
-    particles.push({m:m,vel:vel,life:1,decay:0.016+Math.random()*0.02});
+    var v=new THREE.Vector3((Math.random()-.5)*38,(Math.random()-.5)*32,(Math.random()-.5)*38);
+    particles.push({m:m,v:v,life:1,decay:.018+Math.random()*.02});
   }
 }
 function updateParticles(dt){
   particles=particles.filter(function(p){
-    p.life-=p.decay; if(p.life<=0){scene.remove(p.m);return false;}
-    p.m.position.addScaledVector(p.vel,dt); p.vel.y-=22*dt;
-    p.m.material.opacity=p.life; p.m.scale.setScalar(p.life+0.05); return true;
+    p.life-=p.decay;
+    if(p.life<=0){scene.remove(p.m);return false;}
+    p.m.position.addScaledVector(p.v,dt); p.v.y-=20*dt;
+    p.m.material.opacity=p.life; p.m.scale.setScalar(p.life+.05);
+    return true;
   });
 }
 
-// ═══════════════════════════════════════════════════════
-// RADAR
-// ═══════════════════════════════════════════════════════
-var RRANGE=1500, rblips=[];
-function updateRadar(){
-  rblips.forEach(function(b){b.remove();}); rblips=[];
-  var re=document.getElementById('radar');
+// ════════════════════════════════════════════════
+// RADAR (2D canvas)
+// ════════════════════════════════════════════════
+var rCv=document.getElementById('radar-cv');
+var rCtx=rCv.getContext('2d');
+var rSize=120, rHalf=60;
+function drawRadar(){
+  rCtx.clearRect(0,0,rSize,rSize);
+  // BG
+  rCtx.beginPath();rCtx.arc(rHalf,rHalf,rHalf-1,0,Math.PI*2);
+  rCtx.fillStyle='rgba(0,4,12,.92)';rCtx.fill();
+  // Rings
+  rCtx.strokeStyle='#00aaff18';rCtx.lineWidth=1;
+  rCtx.beginPath();rCtx.arc(rHalf,rHalf,rHalf*.9,0,Math.PI*2);rCtx.stroke();
+  rCtx.strokeStyle='#00ff8825';
+  rCtx.beginPath();rCtx.arc(rHalf,rHalf,rHalf*.54,0,Math.PI*2);rCtx.stroke(); // PAC3 ring
+  // Cross
+  rCtx.strokeStyle='#00aaff10';rCtx.lineWidth=.5;
+  rCtx.beginPath();rCtx.moveTo(rHalf,2);rCtx.lineTo(rHalf,rSize-2);rCtx.stroke();
+  rCtx.beginPath();rCtx.moveTo(2,rHalf);rCtx.lineTo(rSize-2,rHalf);rCtx.stroke();
+  // Sweep
+  var sweepAngle=(-gtime*1.2+Math.PI/2);
+  var grad=rCtx.createConicalGradient?null:null;
+  rCtx.save();rCtx.translate(rHalf,rHalf);rCtx.rotate(-gtime*1.2);
+  rCtx.beginPath();rCtx.moveTo(0,0);rCtx.arc(0,0,rHalf-2,-Math.PI/6,0);rCtx.closePath();
+  rCtx.fillStyle='rgba(0,170,255,.18)';rCtx.fill();
+  rCtx.restore();
+  // Battery (center)
+  rCtx.beginPath();rCtx.arc(rHalf,rHalf,3,0,Math.PI*2);
+  rCtx.fillStyle='#00ff88';rCtx.fill();
+  // Enemy blips
   enemies.forEach(function(e){
     if(!e.alive)return;
     var d=Math.sqrt(e.pos.x*e.pos.x+e.pos.z*e.pos.z);
-    if(d>RRANGE)return;
-    var b=document.createElement('div'); b.className='blip be';
-    b.style.left=((e.pos.x/RRANGE)*44+50)+'%';
-    b.style.top=((e.pos.z/RRANGE)*44+50)+'%';
-    re.appendChild(b); rblips.push(b);
+    if(d>R_RADAR)return;
+    var px=rHalf+e.pos.x/R_RADAR*(rHalf-.5)*.88;
+    var py=rHalf+e.pos.z/R_RADAR*(rHalf-.5)*.88;
+    var inPAC=d<=R_PAC3;
+    rCtx.beginPath();rCtx.arc(px,py,inPAC?4:3,0,Math.PI*2);
+    rCtx.fillStyle=inPAC?'#ff1111':'#ff4444';
+    if(inPAC){rCtx.shadowBlur=8;rCtx.shadowColor='#ff0000';}
+    rCtx.fill();rCtx.shadowBlur=0;
   });
+  // PAC-3 blips
   missiles.forEach(function(ms){
     if(!ms.alive)return;
     var d=Math.sqrt(ms.pos.x*ms.pos.x+ms.pos.z*ms.pos.z);
-    if(d>RRANGE)return;
-    var b=document.createElement('div'); b.className='blip bp';
-    b.style.left=((ms.pos.x/RRANGE)*44+50)+'%';
-    b.style.top=((ms.pos.z/RRANGE)*44+50)+'%';
-    re.appendChild(b); rblips.push(b);
+    if(d>R_RADAR)return;
+    var px=rHalf+ms.pos.x/R_RADAR*(rHalf-.5)*.88;
+    var py=rHalf+ms.pos.z/R_RADAR*(rHalf-.5)*.88;
+    rCtx.beginPath();rCtx.arc(px,py,2.5,0,Math.PI*2);
+    rCtx.fillStyle='#00aaff';rCtx.fill();
   });
+  // Clip to circle
+  rCtx.save();rCtx.globalCompositeOperation='destination-in';
+  rCtx.beginPath();rCtx.arc(rHalf,rHalf,rHalf-1,0,Math.PI*2);rCtx.fill();
+  rCtx.restore();
 }
 
-// ═══════════════════════════════════════════════════════
-// 6DOF DISPLAY
-// ═══════════════════════════════════════════════════════
-function setBar(id,val,mx){
-  var el=document.getElementById('dof-'+id), vEl=document.getElementById('dv-'+id);
-  var pct=Math.min(Math.abs(val)/mx*50,50);
-  if(val>=0){el.style.marginLeft='50%';el.style.width=pct+'%';}
-  else{el.style.marginLeft=(50-pct)+'%';el.style.width=pct+'%';}
-  vEl.textContent=val.toFixed(0);
-}
-function update6DOF(m){
-  if(!m){
-    ['x','y','z','r','p','w'].forEach(function(a){document.getElementById('dof-'+a).style.width='0';document.getElementById('dv-'+a).textContent='0';});
-    return;
-  }
-  var spd=PAC3_SIM_MAXSPEED;
-  setBar('x',m.vx,spd); setBar('y',m.vy,spd); setBar('z',m.vz,spd);
-  setBar('r',(m.roll%(Math.PI*2))*10,10);
-  setBar('p',m.pitch*20,20);
-  setBar('w',m.yaw*15,15);
-}
-
-// ═══════════════════════════════════════════════════════
-// HUD
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// HUD UPDATE
+// ════════════════════════════════════════════════
 var hudT=0;
 function updateHUD(){
-  var ref=focused&&focused.alive?focused:null;
-  document.getElementById('st-y').textContent=ref?ref.pos.y.toFixed(0)+' م':'--';
-  var mEl=document.getElementById('st-mach');
-  mEl.textContent=ref?'M'+ref.machNum.toFixed(2):'--';
-  mEl.className=ref&&ref.machNum>3?'live-v live-hot':'live-v';
-  var gEl=document.getElementById('st-g');
-  gEl.textContent=ref?ref.gLoad.toFixed(1)+'G':'--';
-  gEl.className=ref&&ref.gLoad>30?'live-v live-hot':'live-v';
-  var phaseAr={'boost':'دفع🔥','midcourse':'مسار→','terminal':'اعتراض🎯','ascending':'صاعد⬆'};
-  document.getElementById('st-phase').textContent=ref&&phaseAr[ref.state]?phaseAr[ref.state]:'--';
-  // Round
-  var tot=scoreD+scoreA;
-  if(tot>0&&tot%4===0){var nr=Math.floor(tot/4)+1;if(nr>round){round=nr;spawnI=Math.max(6,14-round);}}
-  document.getElementById('sc-round').textContent=round;
+  // Live data
+  var m=focused&&focused.alive?focused:null;
+  var mEl=document.getElementById('l-mach');
+  mEl.textContent=m?'M'+m.machN.toFixed(2):'--';
+  mEl.className=m&&m.machN>3?'lv-hot':'lv';
+  var gEl=document.getElementById('l-g');
+  gEl.textContent=m?m.gLoad.toFixed(1)+'G':'--';
+  gEl.className=m&&m.gLoad>30?'lv-hot':'lv';
+  var eAlt=document.getElementById('l-alt'); if(eAlt) eAlt.textContent=m?m.pos.y.toFixed(0)+'م':'--';
+  var ph={'boost':'دفع🔥','midcourse':'مسار→','terminal':'اعتراض🎯','safe':'صاعد⬆'};
+  var ePh=document.getElementById('l-phase'); if(ePh) ePh.textContent=m&&ph[m.state]?ph[m.state]:'--';
+
+  // 6DOF
+  function setBar(id,val,mx){
+    var el=document.getElementById('d-'+id), vEl=document.getElementById('v-'+id);
+    var pct=Math.min(Math.abs(val)/mx*50,50);
+    if(val>=0){el.style.marginLeft='50%';el.style.width=pct+'%';}
+    else{el.style.marginLeft=(50-pct)+'%';el.style.width=pct+'%';}
+    vEl.textContent=val.toFixed(0);
+  }
+  var ms=SIM_MAXSPD;
+  setBar('vx',m?m.vx:0,ms);setBar('vy',m?m.vy:0,ms);setBar('vz',m?m.vz:0,ms);
+  setBar('ro',m?(m.roll%(Math.PI*2))*8:0,8);
+  setBar('pi',m?m.pitch*20:0,20);
+  setBar('ya',m?m.yaw*15:0,15);
+
   // Threats
   var tl=document.getElementById('tlist');
   var live=enemies.filter(function(e){return e.alive;});
-  if(live.length===0){tl.innerHTML='<span style="color:#ff444440">لا يوجد تهديد</span>';}
-  else{
-    tl.innerHTML=live.slice(0,5).map(function(e){
-      var dist=e.pos.length().toFixed(0);
-      var mach=(e.vel.length()/realToSimVel(340)).toFixed(1);
-      var locks=missiles.filter(function(m){return m.alive&&m.target===e;}).length;
-      var lkStr=locks>0?'🔒×'+locks:'';
-      var w=parseFloat(dist)<350?'⚠':'';
-      return'<div class="titem"><span class="t-id">'+w+'#'+e.id+'</span><span class="t-d">'+dist+'</span><span class="t-spd">M'+mach+'</span><span class="t-pat">'+e.type+'</span><span class="t-lk">'+lkStr+'</span></div>';
+  if(!live.length){
+    tl.innerHTML='<span style="color:#ff444430;font-size:.5rem">'
+      +(spawnQueue.length?'قادم خلال '+(spawnQueue[0]-gtime).toFixed(0)+'s':'لا يوجد')+'</span>';
+  } else {
+    tl.innerHTML=live.slice(0,7).map(function(e){
+      var d=e.pos.distanceTo(e.target);
+      var spd=e.vel.length();
+      var eta=spd>.1?(d/spd).toFixed(0)+'s':'?';
+      var dist=Math.sqrt(e.pos.x*e.pos.x+e.pos.z*e.pos.z);
+      var inPAC=dist<=R_PAC3, inEWR=dist<=R_EWR;
+      var zone=inPAC?'<span class="zone-pac">PAC3</span>':inEWR?'<span class="zone-ewr">EWR</span>':'<span class="zone-out">---</span>';
+      var lk=missiles.filter(function(ms){return ms.alive&&ms.target===e;}).length;
+      return'<div class="thr-row">'
+        +'<span class="tr-id">'+(e.isHyper?'⚡':'')+(dist<350?'⚠':'')+'#'+e.id+'</span>'
+        +'<span class="tr-src">'+e.launcherId+'</span>'
+        +'<span class="tr-eta">'+eta+'</span>'
+        +zone
+        +'<span class="tr-tgt">→'+e.targetId+'</span>'
+        +(lk?'<span class="tr-lk">🔒</span>':'')
+        +'</div>';
     }).join('');
   }
-  // Missiles
-  var al=document.getElementById('amlist');
-  var livm=missiles.filter(function(m){return m.alive;});
-  if(livm.length===0){al.innerHTML='<span style="color:#00aaff18">لا يوجد</span>';}
+
+  // Missiles in flight
+  var ml=document.getElementById('mlist');
+  var lm=missiles.filter(function(ms){return ms.alive;});
+  if(!lm.length){ml.innerHTML='<span style="color:#00aaff15;font-size:.5rem">لا يوجد</span>';}
   else{
-    al.innerHTML=livm.map(function(m){
-      var dist=m.target&&m.target.alive?m.pos.distanceTo(m.target.pos).toFixed(0):'--';
-      var stMap={'boost':'🔥','midcourse':'→','terminal':'🎯','ascending':'⬆'};
-      return'<div class="ami"><span class="am-id">#'+m.id+'</span><span class="am-t">→#'+(m.target?m.target.id:'?')+'</span><span class="am-d">'+dist+'</span><span class="am-s">'+(stMap[m.state]||'?')+' M'+m.machNum.toFixed(1)+'</span></div>';
+    var ph2={'boost':'🔥','midcourse':'→','terminal':'🎯','safe':'⬆'};
+    ml.innerHTML=lm.map(function(ms){
+      var d=ms.target&&ms.target.alive?ms.pos.distanceTo(ms.target.pos).toFixed(0):'--';
+      return'<div class="mis-row">'
+        +'<span class="mr-id">#'+ms.id+'</span>'
+        +'<span class="mr-tgt">→#'+(ms.target?ms.target.id:'?')+'</span>'
+        +'<span class="mr-eta">'+d+'u</span>'
+        +'<span class="mr-st">'+(ph2[ms.state]||'?')+' M'+ms.machN.toFixed(1)+'</span>'
+        +'</div>';
     }).join('');
   }
-  update6DOF(focused&&focused.alive?focused:null);
+
+  // Base HP
+  var bh=document.getElementById('base-hp');
+  bh.innerHTML=BASE_DEFS.map(function(b,i){
+    var hp=baseHP[i];
+    var col=hp>60?'#00ff88':hp>30?'#fbbf24':'#ff4444';
+    return'<div class="base-hp-row"><span style="color:'+col+'">'+b.id+' '+b.name+'</span>'
+      +'<span style="color:'+col+'">'+hp+'%</span></div>'
+      +'<div class="hp-track"><div class="hp-fill" style="width:'+hp+'%;background:'+col+'"></div></div>';
+  }).join('');
+
+  // Score & round
+  var eRnd=document.getElementById('sc-rnd'); if(eRnd) eRnd.textContent=round;
 }
 
-// ═══════════════════════════════════════════════════════
-// CAMERA
-// ═══════════════════════════════════════════════════════
-document.addEventListener('mousedown',function(e){isDragging=true;lastMX=e.clientX;lastMY=e.clientY;});
-document.addEventListener('mouseup',function(){isDragging=false;});
-document.addEventListener('mousemove',function(e){
-  if(!isDragging)return;
-  camTheta-=(e.clientX-lastMX)*0.007;
-  camPhi=Math.max(0.04,Math.min(0.55,camPhi-(e.clientY-lastMY)*0.005));
-  lastMX=e.clientX; lastMY=e.clientY;
-});
-var ts2={x:0,y:0};
-document.addEventListener('touchstart',function(e){if(e.target.id==='lbtn')return;isDragging=true;ts2.x=e.touches[0].clientX;ts2.y=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchend',function(){isDragging=false;},{passive:true});
-document.addEventListener('touchmove',function(e){
-  if(!isDragging||e.target.id==='lbtn')return;
-  camTheta-=(e.touches[0].clientX-ts2.x)*0.007;
-  camPhi=Math.max(0.04,Math.min(0.55,camPhi-(e.touches[0].clientY-ts2.y)*0.005));
-  ts2.x=e.touches[0].clientX; ts2.y=e.touches[0].clientY;
-},{passive:true});
-function updateCamera(){
-  var x=Math.sin(camTheta)*Math.cos(camPhi)*camDist;
-  var y=Math.sin(camPhi)*camDist+15;
-  var z=Math.cos(camTheta)*Math.cos(camPhi)*camDist;
-  camera.position.set(x,y,z);
-  camera.lookAt(camTarget);
-}
-
-// ═══════════════════════════════════════════════════════
-// ALERT / TOAST
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// ALERTS & TOASTS
+// ════════════════════════════════════════════════
 var alertTO;
-function showAlert(msg){var el=document.getElementById('alertbox');el.textContent=msg;el.style.display='block';clearTimeout(alertTO);alertTO=setTimeout(function(){el.style.display='none';},2800);}
+function showAlert(msg){
+  var el=document.getElementById('alertbox');
+  el.textContent=msg;el.style.display='block';
+  clearTimeout(alertTO);alertTO=setTimeout(function(){el.style.display='none';},2800);
+}
 var toastTO;
 function toast(msg){
   var el=document.getElementById('toast');
-  el.textContent=msg; el.style.opacity='1';
-  clearTimeout(toastTO);
-  toastTO=setTimeout(function(){el.style.opacity='0';},3200);
+  el.textContent=msg;el.style.opacity='1';
+  clearTimeout(toastTO);toastTO=setTimeout(function(){el.style.opacity='0';},3000);
 }
 
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// CAMERA CONTROLS
+// ════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// CAMERA — First Person (رأس ثابت، نظر حر)
+// ════════════════════════════════════════════════
+var camYaw=Math.PI;    // يمين/يسار (0=جنوب، PI=شمال)
+var camPitch=0.0;      // أعلى/أسفل (-PI/2=أسفل، +PI/2=أعلى)
+var camPos=new THREE.Vector3(0,22,180); // أبعد للخلف
+var drag=false, lmx=0, lmy=0;
+
+document.addEventListener('mousedown',function(e){drag=true;lmx=e.clientX;lmy=e.clientY;});
+document.addEventListener('mouseup',function(){drag=false;});
+document.addEventListener('mousemove',function(e){
+  if(!drag)return;
+  camYaw  -= (e.clientX-lmx)*0.005;
+  camPitch = Math.max(-1.4, Math.min(1.4, camPitch+(e.clientY-lmy)*0.005));
+  lmx=e.clientX;lmy=e.clientY;
+});
+document.addEventListener('touchstart',function(e){drag=true;lmx=e.touches[0].clientX;lmy=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',function(){drag=false;},{passive:true});
+document.addEventListener('touchmove',function(e){
+  if(!drag)return;
+  camYaw  -= (e.touches[0].clientX-lmx)*0.005;
+  camPitch = Math.max(-1.4, Math.min(1.4, camPitch+(e.touches[0].clientY-lmy)*0.005));
+  lmx=e.touches[0].clientX;lmy=e.touches[0].clientY;
+},{passive:true});
+
+function updateCamera(){
+  camera.position.copy(camPos);
+  // اتجاه النظر من camYaw و camPitch
+  var dx = Math.sin(camYaw)*Math.cos(camPitch);
+  var dy = Math.sin(camPitch);
+  var dz = Math.cos(camYaw)*Math.cos(camPitch);
+  camera.lookAt(camPos.x+dx*100, camPos.y+dy*100, camPos.z+dz*100);
+}
+
+// ════════════════════════════════════════════════
 // MAIN LOOP
-// ═══════════════════════════════════════════════════════
-var lastT=0; spawnThreat();
+// ════════════════════════════════════════════════
+var lastT=0;
 function animate(ts){
   requestAnimationFrame(animate);
-  var dt=Math.min((ts-lastT)/1000,0.04); lastT=ts; gtime+=dt;
-  spawnT+=dt; if(spawnT>spawnI){spawnT=0;spawnThreat();}
+  var dt=Math.min((ts-lastT)/1000,.04);lastT=ts;gtime+=dt;
+
+  // Spawn queue
+  while(spawnQueue.length&&gtime>=spawnQueue[0].time){
+    var entry=spawnQueue.shift();spawnThreat(entry.forceHyper);
+  }
+  // Round ended — wait for user to press button
+  if(!spawnQueue.length&&!enemies.length&&!missiles.length&&gtime>5&&!roundPending&&!roundWaiting){
+    roundPending=true;
+    roundWaiting=true;
+    totalMis=MAX_MISSILES; usedMis=0; buildBar();
+    // Change button to "start next round"
+    var btn=document.getElementById('lbtn');
+    if(btn){ btn.textContent='▶ ابدأ الجولة '+(round+1); btn.disabled=false; btn.onclick=beginNextRound; }
+    document.getElementById('lstatus').textContent='الجولة '+round+' انتهت';
+    showAlert('✅ الجولة '+round+' انتهت! اضغط ابدأ');
+  }
+
   enemies.forEach(function(e){updateThreat(e,dt);});
-  missiles.forEach(function(m){updateMissile(m,dt);});
-  updateParticles(dt); updateTrails(dt); updateCamera();
-  hudT+=dt; if(hudT>0.1){hudT=0;updateRadar();updateHUD();}
+  missiles.forEach(function(ms){updateMissile(ms,dt);});
+  updateContrails(dt);updateParticles(dt);
+
+  // Rotate radars
+  radarObjs.forEach(function(r){r.rotation.y+=r.userData.rot*dt;});
+
+  updateCamera();
+
+  hudT+=dt;if(hudT>.1){hudT=0;drawRadar();updateHUD();}
   renderer.render(scene,camera);
 }
 animate(0);
+
 window.addEventListener('resize',function(){
-  var gs=document.getElementById('game-screen');
-  var w=gs.clientWidth, h=gs.clientHeight;
-  camera.aspect=w/h; camera.updateProjectionMatrix();
-  renderer.setSize(w,h);
+  var w=gs.clientWidth,h=gs.clientHeight;
+  camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);
 });
+
+// PWA inline SW
+if('serviceWorker' in navigator){
+  var blob=new Blob(['self.addEventListener("install",function(){self.skipWaiting();});self.addEventListener("activate",function(e){e.waitUntil(clients.claim());});'],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function(){});
+}
 </script>
 </body>
 </html>
